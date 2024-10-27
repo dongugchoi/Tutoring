@@ -1,18 +1,19 @@
-import React from 'react'
+import React, { useState } from 'react'
 import Square from './Square'
 
-const board = () => {
+const Board = ({square,onClick,status}) => {
 
-    const handleClick =() =>{
-        console.log('clicked')
-    }
-    const renderSquare = (i) =>{
-        return <Square value={i} onClick ={handleClick}/>
-    }
+  //fill은 array9칸에 널값으로 넣겠다
+
+  const renderSquare = (i) => {
+    return <Square value={square[i]} onClick={() => onClick(i)} />;
+  };
+
+
 
   return (
     <div>
-      <div>NEXT : O/X</div>
+      <div>NEXT: {status}</div>
       <div className='board_row'>
         {renderSquare(0)}
         {renderSquare(1)}
@@ -35,4 +36,4 @@ const board = () => {
   )
 }
 
-export default board
+export default Board;
