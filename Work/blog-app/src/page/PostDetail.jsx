@@ -10,7 +10,7 @@ const [tvalue, setTValue] = useState('');
 
 const navigation = useNavigate()
 const handleChange = (e) => {
-    setTValue(e.target.vlaue);
+    setTValue(e.target.value);
 }
 
 const handleSubmit = (e) => {
