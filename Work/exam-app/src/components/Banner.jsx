@@ -16,7 +16,7 @@ const Banner = () => {
 
   return (
     <div>
-      Banner
+      Banner입니다.
     </div>
   )
 }
