@@ -1,0 +1,43 @@
+구조분해할당
+(Destructuring Assignment)
+구조분해할당은 배열이나 객체의 속성을 분해하여 그 값을 각각의 변수에 담는 JavaScript표현식
+배열이나 객체를 분해하여 해당 속성 값을 개별 변수에 담는 것.
+
+객체 구조분해할당
+객체 선언
+const user={
+	name:'홍길동',
+	age:20,
+	isMan:true
+}
+
+//객체 구조분해할당
+console.log(name); //x
+console.log(user.name, user.age, user.isMan); //구조분해할당 없이 사용
+★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★
+const name = user.name;
+const age= user.age;
+const isMan = user.isMan;
+
+console.log(name);//홍길동
+★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★
+//객체 구조분해할당 방법
+const {name, age, isMan} = user
+console.log(name);//홍길동
+필요한 객체의 값만 사용해도 상관없다.
+★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★
+//구조분해할당은 순서가 바뀌어도 상관없음 => 바로 할당도 가능.
+const{a,b,c}={a:'신사임당',b:30,c:false}
+console.log(a,b,c);
+const {name, age, isMan} = user
+두개가 동일함. 밑에코드는 user라는 객체선언을 위에서 이미했음.
+★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★
+//새로운 변수명에 할당
+const{name,b,c} ={a:'이순신',b:40,c:true}
+console.log(name);  //undefined
+
+const{a:userName,b,c} ={a:'이순신',b:40,c:true}
+console.log(userName);  //이순신
+
+
+
