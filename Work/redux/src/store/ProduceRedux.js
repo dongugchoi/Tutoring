@@ -1,6 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 
+//props로 전역관리는 너무 복잡하다.
+
 let initialState = {
     productList : [],
     selectedItem : null,
