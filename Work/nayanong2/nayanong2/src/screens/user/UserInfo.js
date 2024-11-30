@@ -4,12 +4,12 @@ import '../../css/UserInfo.css'
 import axios from 'axios'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useRecoilState } from 'recoil'
-import { formDataAtom, userPwdAtom } from '../../recoil/UserRecoil'
+import { formDataAtom, confirmPwdAtom } from '../../recoil/UserRecoil'
 
 const UserInfo = () => {
   const navigate = useNavigate();
 
-  const [userPwd, setUserPwd] = useRecoilState(userPwdAtom); //입력된비밀번호
+  const [userPwd, setUserPwd] = useRecoilState(confirmPwdAtom); //입력된비밀번호
   const [userInfo, setUserInfo] = useRecoilState(formDataAtom); // userInfo의 초기값
 
   const { clientNum } = useParams(); // URL에서 clientNum을 가져옵니다.
@@ -69,7 +69,7 @@ const UserInfo = () => {
   const handleSaveClick = async () => {
     console.log("Recoil 상태:",userInfo)
     try {
-      const response = await axios.put(`http://localhost:7070/users/${clientNum}`, userInfo);
+      const response = await axios.put(`http://localhost:7070/users/${clientNum}`, userInfo, userPwd);
 
       
       alert('수정이 완료되었습니다.');
@@ -88,6 +88,7 @@ const UserInfo = () => {
       ...prev,
       [name]: value,
     }
+    
   ));
   }
 
@@ -97,7 +98,7 @@ const UserInfo = () => {
     setShowModal(true);
     console.log('모달 열림 이후 상태:', showModal);
     setBackupUserInfo({ ...userInfo });
-    setUserPwd('');
+    // setUserPwd('');
   }
 
   // 취소버튼

@@ -144,13 +144,12 @@ function Signup() {
             className="signupInput"
           />
           <input
-            type="text"
-            name="userNick"
-            placeholder="닉네임"
-            value={formData.userNick}
-            onChange={handleChange}
-            className="signupInput"
-          />
+  type="text"
+  name="userNick" // 정확히 설정되어 있는지 확인
+  placeholder="닉네임"
+  value={formData.userNick} // Recoil 상태와 연결 확인
+  onChange={handleChange}
+/>
           <input
             type="email"
             name="userEmail"
