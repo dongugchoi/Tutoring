@@ -88,8 +88,10 @@ const UserInfo = () => {
       ...prev,
       [name]: value,
     }
-    
   ));
+  if (name === "userPwd") {
+    setUserPwd(value); // 비밀번호 필드 별도 관리
+  }
   }
 
   // 수정버튼
