@@ -3,7 +3,7 @@ import logo from '../../assets/logo.png'
 import '../../css/Qna.css';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { useRecoilState } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import { clientNumAtom, userNickAtom } from '../../recoil/UserRecoil';
 
 const Qna = () => {
@@ -17,7 +17,7 @@ const Qna = () => {
         qnaDtail:'',
     })
     const [date, setDate] = useState(''); //작성일자
-    const clientNum = useRecoilState(clientNumAtom) //로컬스토리지에 클라이언트넘을 변수에저장
+    const clientNum = useRecoilValue(clientNumAtom) //로컬스토리지에 클라이언트넘을 변수에저장
     
     //날짜 함수
     useEffect(() => {

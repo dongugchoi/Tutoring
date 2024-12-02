@@ -4,7 +4,7 @@ import logo from '../../assets/logo.png'
 import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { useRecoilState, useSetRecoilState } from 'recoil';
-import { clientNumAtom,loginsuccessAtom, messageAtom, userIdAtom, userPwdAtom } from '../../recoil/UserRecoil';
+import { clientNumAtom,loginsuccessAtom, messageAtom, userIdAtom, userPwdAtom, userNicksuccessAtom } from '../../recoil/UserRecoil';
 
 function Login() {
   const navigate = useNavigate();
@@ -15,6 +15,7 @@ function Login() {
   const [message, setMessage] = useRecoilState(messageAtom);
   const setLoginSuccess = useSetRecoilState(loginsuccessAtom);
   const setClientNum = useSetRecoilState(clientNumAtom);
+  const setUserNick = useSetRecoilState(userNicksuccessAtom);
 
   
   const handleBack = () => {
@@ -54,14 +55,16 @@ function Login() {
       if (response.status >= 200 && response.status < 300) {
         const user = response.data;
 
-        // 로컬 스토리지에 상태 저장
-        localStorage.setItem('loginsuccess', 'true');
-        localStorage.setItem('userId', user.userId);
-        localStorage.setItem('clientNum', user.clientNum);
+        // 세션 스토리지에 상태 저장
+        sessionStorage.setItem('loginsuccess', 'true');
+        sessionStorage.setItem('userId', user.userId);
+        sessionStorage.setItem('clientNum', user.clientNum);
+        sessionStorage.setItem('userNick', user.userNick);
 
         // 부모 상태 업데이트
         setLoginSuccess(true);
         setClientNum(user.clientNum);
+        setUserNick(user.userNick)
 
         alert('로그인 성공');
 

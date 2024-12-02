@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import { clientNumAtom, loginsuccessAtom, loginsuccessSelector, clientNumSelector } from './recoil/UserRecoil';
+import { bodNumAtom } from '../src/recoil/BoardRecoil'
 import Login from './screens/user/Login';
 import Signup from './screens/user/Signup';
 import UserInfo from './screens/user/UserInfo';
@@ -11,6 +12,7 @@ import Qna from './screens/board/Qna'
 import Header from './screens/Header'
 import Board from './screens/board/Board'
 import WritePost from './screens/board/WritePost'
+import PostDetail from './screens/board/PostDetail';
 
 function App() {
   
@@ -22,6 +24,7 @@ function App() {
   */
   const [loginsuccess, setLoginSuccess] = useRecoilState(loginsuccessAtom);
   const [clientNum, setClientNum] = useRecoilState(clientNumAtom);
+  const [bodNum, setBodNum] = useRecoilState(bodNumAtom)
 
   /*
    useRecoilValue
@@ -70,6 +73,7 @@ const isLoginPage = location.pathname === '/login';
         <Route path="/qna" element={<Qna />} />
         <Route path="/board" element={<Board />} />
         <Route path="/write" element={<WritePost />} />
+        <Route path="/post/:bodNum" element={<PostDetail />} />
       </Routes>
     </div>
   );

@@ -1,9 +1,9 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import logo from '../assets/logo.png';
 import '../css/Main.css'
-import { useRecoilValue, useResetRecoilState, useSetRecoilState } from 'recoil';
-import { clientNumAtom, loginsuccessAtom, messageAtom, userIdAtom, userPwdAtom } from '../recoil/UserRecoil';
+import { useRecoilValue, useResetRecoilState, useSetRecoilState, useRecoilState} from 'recoil';
+import { clientNumAtom, loginsuccessAtom, messageAtom, userIdAtom, userPwdAtom, formDataAtom, userNickSelector } from '../recoil/UserRecoil';
 
 const Header = () => {
   const navigate = useNavigate();
@@ -15,20 +15,35 @@ const Header = () => {
   const setLoginSuccess = useSetRecoilState(loginsuccessAtom);
   //clientNumAtom에서 현재 클라이언트번호를 읽어와 clientNum변수에 저장
   const clientNum = useRecoilValue(clientNumAtom);
+  const [userNick, setUserNick] = useRecoilState(userNickSelector);
 
-  //로그아웃시 로그인 인풋에 남아있는 값 초기화 하기위해 상태초기화함수 가져왔다
+
+
+  //로그아웃시 로그인 인풋에 남아있는 값 디폴트값으로 초기화 하기위해 상태초기화함수 가져왔다
   const resetUserId = useResetRecoilState(userIdAtom);
   const resetUserPwd = useResetRecoilState(userPwdAtom);
   const resetMessage = useResetRecoilState(messageAtom);
+  const resetFormData = useResetRecoilState(formDataAtom);
+
+  // useEffect(() => {
+  //   const localUserNick = localStorage.getItem("userNick");
+  //   if (localUserNick && localUserNick !== userNick) {
+  //     setUserNick(localUserNick); // 로컬 스토리지와 상태 동기화
+  //   }
+  // }, [userNick, setUserNick]);
+  
 
   //로그아웃 함수
   const handleLogout = () => {
     setLoginSuccess(false);
-    localStorage.removeItem('loginsuccess');
-    localStorage.removeItem('clientNum');
+    sessionStorage.removeItem('loginsuccess');
+    sessionStorage.removeItem('clientNum');
+    sessionStorage.removeItem('userNick');
+    sessionStorage.removeItem('userId');
     resetUserId();
     resetUserPwd();
     resetMessage();
+    resetFormData();
     alert('로그아웃 되었습니다.');
     navigate('/');
   };
@@ -43,18 +58,16 @@ const Header = () => {
     }
   };
 
-  
-
   return (
     <header className="mainHeader">
       <div className="mainHeaderLeft">
         <img src={logo} alt="Logo" className="mainLogo" onClick={() => navigate('/')} />
-        <h2 className='logoText '>나야, 농</h2>
+        <h2 className='logoText ' onClick={() => navigate('/')}>나야, 농</h2>
       </div>
       <nav className="mainHeaderNav">
         <ul>
           <li className={location.pathname === '/' ? 'active' : ''}>
-            <Link to="/">Home</Link>
+            <Link to="/">도·소매가 정보</Link>
           </li>
           <li className={location.pathname === '/board' ? 'active' : ''}>
             <Link to="/board">게시판</Link>
@@ -65,6 +78,8 @@ const Header = () => {
         </ul>
       </nav>
       <div className="mainHeaderRight">
+      {loginsuccess && <span className='HeaderHello'>환영합니다<br/> {userNick}님</span>}
+
         {!loginsuccess ? (
           <>
             <button className="mainButton" onClick={() => navigate('/login')}>
