@@ -1,0 +1,83 @@
+/* 전체 컨테이너 스타일 */
+.writeContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 50px;
+  height: 100vh;
+  background-color: #FFFFFF; /* 배경 흰색 */
+}
+
+/* 글쓰기 헤더 */
+.writeHeader {
+  font-size: 24px;
+  font-weight: bold;
+  color: black; /* 검정 텍스트 */
+  text-align: center;
+  margin-bottom: 20px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+  border-bottom: 2px solid #d4a373; /* 메인 색상 */
+  padding-bottom: 10px;
+  display: inline-block;
+  margin-top: 0;
+  font-family: 'SSFlowerRoad', sans-serif;
+}
+
+/* 입력 폼 */
+.writeInputContainer {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 600px; /* 최대 너비 설정 */
+  margin: 0 auto;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+/* 입력 필드 */
+.writeInput,
+.writeInputtext {
+  width: 100%; /* 부모 컨테이너 너비에 맞춤 */
+  max-width: 600px; /* 최대 너비 제한 */
+  padding: 15px;
+  margin-bottom: 20px; /* 하단 여백 */
+  border: 2px solid #d4a373; /* 메인 색상 */
+  border-radius: 8px;
+  background-color: #FFFFFF; /* 배경 흰색 */
+  font-size: 18px;
+  color: black; /* 검정 텍스트 */
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
+}
+
+/* 텍스트 입력 영역 */
+.writeInputtext {
+  height: 200px; /* 입력 박스 높이 */
+  resize: none;
+}
+
+/* 버튼 */
+.writeButton {
+  display: block; /* 인라인 대신 블록으로 설정 */
+  margin: 20px auto 0; /* 상단 여백 추가하고 가로로 중앙 정렬 */
+  padding: 15px 30px;
+  font-size: 18px;
+  font-weight: bold;
+  color: white; /* 흰색 텍스트 */
+  background-color: #d4a373; /* 메인 색상 */
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.writeButton:hover {
+  background-color: #b08968; /* 강조된 메인 색상 */
+  transform: scale(1.05); /* 약간 확대 효과 */
+}
+
+body.no-scroll {
+  overflow: hidden;
+  height: 100%;
+}
