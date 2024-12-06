@@ -18,7 +18,7 @@ import {
 const UserInfo = () => {
   const navigate = useNavigate();
 
-  const [userPwd, setUserPwd] = useState(''); // 입력된 비밀번호
+  const [password, setPassword] = useState(''); // 입력된 비밀번호
   const [userInfo, setUserInfo] = useRecoilState(formDataAtom); // userInfo의 초기값
   const [userNick, setUserNick] = useState('');
 
@@ -28,13 +28,13 @@ const UserInfo = () => {
   const [message, setMessage] = useRecoilState(messageAtom); // 클라이언트 메시지
   const [smessage, setSMessage] = useRecoilState(smessageAtom); // 서버 메시지
 
- const clientNum = localStorage.getItem("clientNum")
- 
+  const clientNum = localStorage.getItem("clientNum")
+
   const [edit, setEdit] = useState(false);
   const [backupUserInfo, setBackupUserInfo] = useState(null); // 백업 상태
   const [showModal, setShowModal] = useState(false); // 모달 표시 상태
   const [showPassword, setShowPassword] = useState(false); // 비밀번호 표시 여부
-
+  const [isDeleteMode, setIsDeleteMode] = useState(false)// 회원탈퇴 모드 여부
   //스크롤 없애기
   useEffect(() => {
     // body에 클래스 추가
@@ -59,7 +59,7 @@ const UserInfo = () => {
             },
           }
         );
-  
+
         // 서버에서 데이터 받아서 상태 업데이트
         if (response.data.clientNum) {
           setUserInfo(response.data); // Recoil 상태 업데이트
@@ -70,19 +70,19 @@ const UserInfo = () => {
         console.error("회원정보 로드 실패:", error);
       }
     };
-  
+
     loadUserDetails(); // 함수 호출
   }, [clientNum, setUserInfo]);
-  
+
 
   // 비밀번호 확인
   const handlePasswordClick = async () => {
     try {
       const token = localStorage.getItem("ACCESS_TOKEN");
       const response = await axios.post("http://localhost:7070/users/verifypassword",
-       {
+        {
           clientNum: clientNum,
-          userPwd: userPwd,
+          userPwd: password,
         },
         {
           headers: {
@@ -115,31 +115,32 @@ const UserInfo = () => {
 
     if (!isValid) return;
 
-    const updatedUserInfo = { ...userInfo, userPwd };
+    const updatedUserInfo = { ...userInfo, userPwd: password };
     const token = localStorage.getItem("ACCESS_TOKEN");
     try {
       const response = await axios.put(
-        `http://localhost:7070/users/${clientNum}`,updatedUserInfo,
+        `http://localhost:7070/users/${clientNum}`, updatedUserInfo,
         {
           headers: {
             Authorization: `Bearer ${token}`, // 인증 토큰 추가
           },
         }
       );
-  
+      console.log("전송 데이터:", updatedUserInfo); // 전송 데이터 로그 확인
 
       if (response.status === 200) {
         const updatedUser = response.data;
 
         setUserNick(updatedUser.userNick);
-
-        sessionStorage.setItem("userNick", updatedUser.userNick);
+        //로컬스토리지의 유저닉네임 업데이트
+        localStorage.setItem("userNick", updatedUser.userNick);
 
         alert("수정이 완료되었습니다.");
         setEdit(false);
-        setUserPwd("");
+        setPassword("");
         setMessage(""); // 메시지 초기화
         setSMessage(""); // 서버 메시지 초기화
+        window.location.reload();
       }
     } catch (error) {
       console.error("저장 실패:", error);
@@ -157,7 +158,7 @@ const UserInfo = () => {
     const { name, value } = e.target;
 
     if (name === "userPwd") {
-      setUserPwd(value);
+      setPassword(value);
     } else {
       setUserInfo((prev) => ({
         ...prev,
@@ -175,15 +176,88 @@ const UserInfo = () => {
 
   };
 
+  //회원 탈퇴
+  const handleDelete = () => {
+    setIsDeleteMode(true)
+    setShowModal(true)
+    
+  }
+
+
+  //회원 탈퇴요청
+  const handleDeleteConfirm = async () => {
+    const token = localStorage.getItem("ACCESS_TOKEN");
+    try {
+      //게시글 조회 (사용자가 작성한 게시글 목록 가져오기)
+      const boardResponse = await axios.get(`http://localhost:7070/board`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const responseBoards = boardResponse.data;  // 게시글 목록
+      // 현재 로그인된 사용자의 userNick
+      const currentUserNick = localStorage.getItem("userNick");
+      // 게시글 삭제
+      for (let i = 0; i < responseBoards.length; i++) {
+        const board = responseBoards[i];
+        const bodNum = board.bodNum;
+        const boardUserNick = board.userNick;  // 게시글 작성자의 userNick
+        if (boardUserNick === currentUserNick) {
+          try {
+            // 게시글 삭제 요청
+            const deleteBoardResponse = await axios.delete(`http://localhost:7070/board/${bodNum}`, {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            });
+            if (deleteBoardResponse.status === 200) {
+              console.log(`게시글 번호 ${bodNum} 삭제 완료`);
+            }
+          } catch (error) {
+            console.error(`게시글 번호 ${bodNum} 삭제 실패`, error);
+          }
+        } else {
+          console.log(`게시글 번호 ${bodNum}는 삭제 대상이 아님 (작성자: ${boardUserNick}, 현재 사용자: ${currentUserNick})`);
+        }
+      }
+      // 회원 탈퇴 요청 (회원 정보를 먼저 삭제)
+      const deleteUserResponse = await axios.delete(`http://localhost:7070/users/${clientNum}`, {
+        data: { clientNum, userPwd: password },
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (deleteUserResponse.status === 200) {
+        console.log("회원 탈퇴가 완료되었습니다.");
+        // 탈퇴 후, 토큰 및 사용자 정보 삭제
+        localStorage.removeItem("ACCESS_TOKEN");
+        localStorage.removeItem("userNick");
+        localStorage.removeItem('clientNum');
+        localStorage.removeItem('userId');
+
+        alert("회원 탈퇴가 완료되었습니다.");
+        navigate('/board'); 
+      }
+    } catch (error) {
+      console.error("회원 탈퇴 중 오류 발생", error);
+      alert("회원 탈퇴에 실패했습니다.");
+    }
+  };
+
+
+
+
   //취소버튼 
   const handleCancelClick = () => {
     if (backupUserInfo) {
       setUserInfo({ ...backupUserInfo });
     }
+    setPassword("");
     setEdit(false);
     setMessage("");
     setSMessage("");
   };
+
 
   //비밀번호 숨기기 / 보이기
   const togglePasswordVisibility = () => {
@@ -192,9 +266,11 @@ const UserInfo = () => {
 
   //모달 취소버튼
   const modalCancelClick = () => {
-    setUserPwd("");
+    setPassword("");
     setShowModal(false);
+    setIsDeleteMode(false)
   };
+
 
   return (
     <div className="userInfoContainer">
@@ -217,7 +293,7 @@ const UserInfo = () => {
                 className="userInfoFormInput"
                 type={showPassword ? "text" : "password"}
                 name="userPwd"
-                value={userInfo.userPwd}
+                value={password}
                 onChange={handleInputChange}
               />
               <button
@@ -299,7 +375,7 @@ const UserInfo = () => {
             </div>
             <div className="userInfoFormGroup">
               <label className="userInfoFormLabel">핸드폰번호:</label>
-              <span className="userInfoFormText">{userInfo.userPnum}</span>
+              <span className="userInfoFormText">{"*".repeat(userInfo.userPnum?.length || 0)}</span>
             </div>
             <div className="userInfoFormGroup">
               <label className="userInfoFormLabel">통신사:</label>
@@ -319,6 +395,12 @@ const UserInfo = () => {
             >
               돌아가기
             </button>
+            <button
+              className="userInfoFormButton userInfoFormCancelButton"
+              type="button"
+              onClick={handleDelete}>
+              회원탈퇴
+            </button>
           </>
         )}
       </form>
@@ -329,20 +411,24 @@ const UserInfo = () => {
             className="modalContent"
             onSubmit={(e) => {
               e.preventDefault();
-              handlePasswordClick();
+              if (isDeleteMode) {
+                handleDeleteConfirm(); //회원탈퇴
+              } else {
+                handlePasswordClick(); // 비밀번호 확인
+              }
             }}
           >
-            <h3>비밀번호 확인</h3>
+            <h3>{isDeleteMode ? "회원탈퇴 확인" : "비밀번호 확인"}</h3>
             <input
               type="password"
               placeholder="비밀번호를 입력하세요"
-              value={userPwd}
-              onChange={(e) => setUserPwd(e.target.value)}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               className="modalInput"
             />
             <div className="modalButtons">
               <button type="submit" className="modalConfirmButton">
-                확인
+                {isDeleteMode ? "회원탈퇴" : "확인"}
               </button>
               <button
                 type="button"

@@ -3,7 +3,7 @@ import "../../css/Signup.css";
 import logo from "../../assets/logo.png";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useResetRecoilState } from "recoil";
 import {
   formDataAtom,
   messageAtom,
@@ -14,6 +14,7 @@ import {
 } from "../../recoil/UserRecoil";
 
 function Signup() {
+  const resetFormData = useResetRecoilState(formDataAtom);
   const [formData, setFormData] = useRecoilState(formDataAtom);
   const [smessage, setSmessage] = useRecoilState(smessageAtom);
   const [message, setMessage] = useRecoilState(messageAtom);
@@ -21,6 +22,10 @@ function Signup() {
   const [validationRegex] = useRecoilState(validationRegexAtom); // 정규식 Atom 불러오기
 
   const navigate = useNavigate();
+
+  useEffect(() =>{
+    resetFormData();
+  },[])
 
   useEffect(() => {
     // body에 클래스 추가
@@ -66,10 +71,11 @@ function Signup() {
 
   // 회원가입 요청
   const addUser = async (formData) => {
+    const token = localStorage.getItem("ACCESS_TOKEN");
     try {
       const response = await axios.post("http://localhost:7070/users/signup", formData, {
         headers: {
-          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`, // 인증 토큰 추가
         },
       });
       console.log("회원추가 성공", response.data);
