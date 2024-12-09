@@ -74,7 +74,7 @@ const PostDetail = () => {
             }
         }
         getBoardData()
-    }, [bodNum]) 
+    }, [bodNum])
 
     const fetchLikeCount = async () => {
         const token = localStorage.getItem("ACCESS_TOKEN");
@@ -89,27 +89,28 @@ const PostDetail = () => {
             console.error("좋아요 개수 불러오기 실패:", error);
         }
     };
-    
 
-       // 좋아요 토글
-       const toggleLike = async () => {
+
+
+
+    // 좋아요 토글
+    const toggleLike = async () => {
         const token = localStorage.getItem("ACCESS_TOKEN");
-        console.log("현재 bodNum",bodNum);
-        
-    
+        console.log("현재 bodNum", bodNum);
+
+
         if (!token) {
-            console.error("ACCESS_TOKEN이 없습니다. 로그인이 필요합니다.");
             alert("로그인이 필요합니다.");
             return;
         }
-    
+
         try {
             // 요청 데이터 로깅
             console.log("요청 데이터:", { userNick: localStorageUserNick, bodNum: parseInt(bodNum) });
-    
+
             // 서버로 요청 전송
             const response = await axios.post(
-                "http://localhost:7070/heart/like",
+                "http://localhost:7070/heart",
                 {
                     userNick: localStorageUserNick, // 사용자 닉네임
                     bodNum: parseInt(bodNum),      // 게시물 번호
@@ -120,15 +121,15 @@ const PostDetail = () => {
                     },
                 }
             );
-    
+
             console.log("서버 응답:", response.data); // 서버 응답 로깅
-    
+
             // 서버 응답 처리
-            if (response.data === true) {
+            if (response.data === "좋아요가 추가되었습니다.") {
                 // 좋아요 추가
                 setLiked(true);
                 setLikeCount((prev) => prev + 1);
-            } else if (response.data === false) {
+            } else if (response.data === "좋아요가 취소되었습니다.") {
                 // 좋아요 취소
                 setLiked(false);
                 setLikeCount((prev) => Math.max(prev - 1, 0));
@@ -142,14 +143,14 @@ const PostDetail = () => {
             alert("좋아요 처리 중 오류가 발생했습니다.");
         }
     };
-    
-    
+
 
     // 페이지 로드 시 좋아요 개수 초기화
     useEffect(() => {
         fetchLikeCount();
+
     }, [bodNum]); // 게시글 번호가 변경될 때마다 실행
-    
+
     // 게시글 삭제
     const handleDelete = async () => {
         const token = localStorage.getItem("ACCESS_TOKEN");
@@ -207,27 +208,34 @@ const PostDetail = () => {
                         onClick={toggleLike}
                         style={{ cursor: "pointer", fontSize: "1.5rem" }}
                     >
-                        {liked ? <FaThumbsUp color="blue" /> : <FaRegThumbsUp color="gray" />}
+                        <FaRegThumbsUp color="gray" />
                     </span>
                     좋아요: {likeCount}
                 </div>
                 <div className="postButtonLargeRow">
                     <button onClick={handleBack}>이전</button>
                     <button onClick={handleNext}>다음</button>
-                    {board.project?.userNick === localStorageUserNick && (
-                        <>
-                            <button onClick={() => navigate(`/update/${bodNum}`)}>수정</button>
-                            <button onClick={handleDelete}>삭제</button>
-                        </>
-                    )}
+                    <button
+                        className={board.project?.userNick === localStorageUserNick ? "" : "hidden"}
+                        onClick={() => navigate(`/update/${bodNum}`)}
+                    >
+                        수정
+                    </button>
+                    <button
+                        className={board.project?.userNick === localStorageUserNick ? "" : "hidden"}
+                        onClick={handleDelete}
+                    >
+                        삭제
+                    </button>
                     <button onClick={() => navigate("/board")}>목록으로</button>
                 </div>
+
             </div>
             {/* Comments 컴포넌트 삽입 */}
             <Comments />
         </div>
     );
-    
+
 };
 
 export default PostDetail;

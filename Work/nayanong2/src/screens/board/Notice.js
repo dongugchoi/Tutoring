@@ -190,9 +190,9 @@ const Notice = () => {
                     <button className="sidebarToggleButton" onClick={toggleSidebar}>
                         <FaBars />
                     </button>
-                    {/* <button className="noticeWriteButton" onClick={() => navigate('/write')}>
+                    <button className="noticeWriteButton" onClick={() => navigate('/write')}>
                         글쓰기
-                    </button> */}
+                    </button>
                 </div>
                 <form
                     className="noticeContainerButton2"
