@@ -7,27 +7,36 @@ const Farm = () => {
     const [activeIndex, setActiveIndex] = useState(null);
     const [priceData, setPriceData] = useState([]);
     const [error, setError] = useState("");
+    const [loading, setLoading] = useState(false);
+
+    // 소매/도매 선택 상태
+    const [priceType, setPriceType] = useState("retail"); // 기본값: 소매
 
     // 요청 데이터 예시
     const requestData = 
-    {
-        "p_startday": "2024-12-08",
-        "p_endday": "2024-12-09",
-        "p_itemcategorycode": "200",
-        "p_itemcode": "258",
-        "p_kindcode": "01",
-        "p_productrankcode": "04",
-        "p_countrycode": "2300",
-        "p_returntype": "json"
-    }
-       
+        {
+            "p_startday": "2024-12-01",
+            "p_endday": "2024-12-09",
+            "p_itemcategorycode": "200",
+            "p_itemcode": "111",
+            "p_kindcode": "01",
+            "p_productrankcode":"" ,
+            "p_countrycode": "2300",
+          "p_returntype": "json"
+        };
 
+    // 데이터 가져오기
     const fetchdata = async () => {
+        setLoading(true);
+        setError("");
+
+        const apiUrl =
+            priceType === "retail"
+                ? "http://localhost:7070/retail/price" // 소매 API
+                : "http://localhost:7070//wholeSale/price"; // 도매 API
+
         try {
-            const response = await axios.post(
-                `http://localhost:7070/api/price`,
-                requestData
-            );
+            const response = await axios.post(apiUrl, requestData);
             if (response.status === 200) {
                 setPriceData(response.data); // 데이터를 상태에 저장
             } else {
@@ -36,12 +45,14 @@ const Farm = () => {
         } catch (error) {
             console.error("데이터를 가져오는 중 오류 발생:", error);
             setError("서버 요청 중 오류가 발생했습니다.");
+        } finally {
+            setLoading(false);
         }
     };
 
     useEffect(() => {
-        fetchdata(); // 컴포넌트 마운트 시 데이터 가져오기
-    }, []);
+        fetchdata(); // 가격 데이터 가져오기
+    }, [priceType]); // priceType 변경 시 API 호출
 
     const handleToggle = (index) => {
         if (activeIndex === index) {
@@ -63,6 +74,17 @@ const Farm = () => {
                 </form>
             </div>
             <div className="farmFilterContainer">
+                <div>
+                    {/* 소매/도매 선택 */}
+                    <select
+                        className="farmSelect"
+                        value={priceType}
+                        onChange={(e) => setPriceType(e.target.value)}
+                    >
+                        <option value="retail">소매</option>
+                        <option value="wholesale">도매</option>
+                    </select>
+                </div>
                 <select className="farmSelect">
                     <option>지역</option>
                     <option>서울</option>
@@ -74,20 +96,14 @@ const Farm = () => {
                     <option>월간</option>
                     <option>연간</option>
                 </select>
-                <select className="farmSelect">
-                    <option>분류</option>
-                    <option>도매가격</option>
-                    <option>소매가격</option>
-                </select>
             </div>
             <div>
+                {loading && <p>로딩 중...</p>}
                 {error && <p className="errorText">{error}</p>}
                 {priceData.length > 0 ? (
                     priceData.map((item, index) => (
                         <div key={index}>
-                            <p>평균</p>
-                            <p>연도 : {item.yyyy}</p>
-                            <p>날짜 : {item.regday}</p>
+                            <p>이름: {item.kindname}</p>
                             <p>가격: {item.price}</p>
                         </div>
                     ))
