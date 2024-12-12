@@ -21,6 +21,7 @@ const Board = () => {
     const [sortBy, setSortBy] = useState('date');
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
     const setSearchResults = useSetRecoilState(searchResultsAtom);
+    const adminUserNick = localStorage.getItem("userNick")
 
     useEffect(() => {
         const handleResize = () => {
@@ -40,57 +41,57 @@ const Board = () => {
     };
 
     const getList = async () => {
-        const token = localStorage.getItem('ACCESS_TOKEN')
+        const token = localStorage.getItem('ACCESS_TOKEN');
         try {
-            const response = await axios.get('http://localhost:7070/board',
+            const response = await axios.get('http://localhost:7070/board', {
+                userNick: adminUserNick, //userNick을 쿼리 파라미터로 저장
+            },
                 {
                     headers: {
                         Authorization: `Bearer ${token}`
-                    }
+
+                    },
                 }
             );
             if (response.status === 200) {
-                // 원본 데이터를 sortedPost로 복사
-                let sortedPost = response.data
 
-                // 작성자의 게시글과 다른 유저의 게시글 분리
-                const adminPost = sortedPost.filter(post => post.userNick === "관리자").reverse();
-                const otherPost = sortedPost.filter(post => post.userNick !== "관리자")
+                //response.data : 서버에서 받은 게시글 목록
+                //filter(post => post.userNick === "rhksflwk")
+                // : posts 배열 안에 게시글 중 작성자의 userNick이 "rhksflwk"인 게시글 필터링 
+                //filterPost : 필터링된 게시글을 filterPost변수에 저장
+                const filterPost = response.data.filter(post => post.userNick === "관리자")
+                setPosts(filterPost.reverse());
 
-                // 다른 유저의 게시글을 정렬
-                let sortedOtherPost = [...otherPost]
+                let sortedPost = filterPost
+                console.log('User Nick:', adminUserNick);
+                console.log("게시글 데이터:", sortedPost);
 
                 switch (sortBy) {
                     case 'date':
-                        sortedOtherPost = sortedOtherPost.sort((a, b) => {
-                            const dateA = new Date(a.created_at)
-                            const dateB = new Date(b.created_at)
-                            return dateB - dateA
-                        }).reverse()// 최신순
-                        break
+                        sortedPost = [...sortedPost].sort((a, b) => {
+                            const dateA = new Date(a.created_at);
+                            const dateB = new Date(b.created_at);
+                            return dateB - dateA; // 최신순
+                        });
+                        break;
                     case 'views':
-                        sortedOtherPost = sortedOtherPost.sort((a, b) => b.views - a.views);// 조회수 순
-                        break
+                        sortedPost = sortedPost.sort((a, b) => b.views - a.views); // 조회수 순
+                        break;
                     case 'title':
-                        sortedOtherPost = sortedOtherPost.sort((a, b) => a.bodTitle.localeCompare(b.bodTitle)) // 제목순
-                        break
+                        sortedPost = sortedPost.sort((a, b) => a.bodTitle.localeCompare(b.bodTitle)); // 제목순
+                        break;
                     default:
-                        break
+                        break;
                 }
-
-                // 관리자 게시글을 최상단에 두고 나머지 게시글들을 정렬 후 합침
-                sortedPost = [...adminPost, ...sortedOtherPost]
-
-                // 최종 업데이트
-                setPosts(sortedPost)
+                setPosts(sortedPost);
             }
         } catch (error) {
-            console.error('목록을 가져올 수 없습니다.')
-            alert('게시글 목록을 불러오는 데 실패했습니다.')
+            console.error('목록을 가져올 수 없습니다.');
+            alert('공지사항 목록을 불러오는 데 실패했습니다.');
         } finally {
-            setLoading(false)
+            setLoading(false);
         }
-    }
+    };
 
 
     // 한 페이지에 렌더링되는 게시글의 수 설정
@@ -210,6 +211,9 @@ const Board = () => {
 
     return (
         <div className="boardContainer">
+               {isMobile && (
+                <h2 className="boardname">공지사항</h2>
+            )}
             {/* 사이드바 */}
             <div className={`boardSidebarContainer ${isSidebarVisible ? 'show' : 'hide'}`}>
                 <button className="boardCloseSidebarButton" onClick={toggleSidebar}>
@@ -229,24 +233,29 @@ const Board = () => {
             {/* 작성일 및 페이지당 항목 수 선택 */}
             {!isMobile && (
                 <div className="boardOptionsContainer">
-                    <select
-                        className="boardSortBySelect"
-                        value={sortBy}
-                        onChange={handleSortChange}
-                    >
-                        <option value="date">작성일</option>
-                        <option value="views">조회수</option>
-                        <option value="title">제목</option>
-                    </select>
-                    <select
-                        className="boardItemsPerPageSelect"
-                        value={itemsPerPage}
-                        onChange={(e) => setItemsPerPage(Number(e.target.value))}
-                    >
-                        <option value={10}>10개</option>
-                        <option value={20}>20개</option>
-                        <option value={30}>30개</option>
-                    </select>
+                    <div>
+                        <h2 className='boardname'>공지사항</h2>
+                    </div>
+                    <div>
+                        <select
+                            className="boardSortBySelect"
+                            value={sortBy}
+                            onChange={handleSortChange}
+                        >
+                            <option value="date">작성일</option>
+                            <option value="views">조회수</option>
+                            <option value="title">제목</option>
+                        </select>
+                        <select
+                            className="boardItemsPerPageSelect"
+                            value={itemsPerPage}
+                            onChange={(e) => setItemsPerPage(Number(e.target.value))}
+                        >
+                            <option value={10}>10개</option>
+                            <option value={20}>20개</option>
+                            <option value={30}>30개</option>
+                        </select>
+                    </div>
                 </div>
             )}
 
@@ -255,45 +264,46 @@ const Board = () => {
 
                 {/* 버튼 및 정렬 옵션 */}
                 {!isMobile && (
-                <div className="boardActionContainer">
+                    <div className="boardActionContainer">
 
-                    <button className="sidebarToggleButton" onClick={toggleSidebar}>
-                        <FaBars />
-                    </button>
-                    <button className="boardWriteButton" onClick={() => navigate('/write')}>
-                        글쓰기
-                    </button>
-               
-                </div>
+                        <button className="sidebarToggleButton" onClick={toggleSidebar}>
+                            <FaBars />
+                        </button>
+                        <button className="boardWriteButton" onClick={() => navigate('/write')}
+                            style={{ display: adminUserNick === '관리자' ? 'visible' : 'none' }}>
+                            글쓰기
+                        </button>
+                    </div>
                 )}
                 {isMobile && (
-                        <>
-                            <button className="boardsidebarToggleButton" onClick={toggleSidebar}>
-                                <FaBars />
-                            </button>
-                            <button className="boardWriteButton" onClick={() => navigate('/write')}>
-                                글쓰기
-                            </button>
-                            <select
-                                className="boardSortBySelect"
-                                value={sortBy}
-                                onChange={handleSortChange}
-                            >
-                                <option value="date">작성일</option>
-                                <option value="views">조회수</option>
-                                <option value="title">제목</option>
-                            </select>
-                            <select
-                                className="boardItemsPerPageSelect"
-                                value={itemsPerPage}
-                                onChange={(e) => setItemsPerPage(Number(e.target.value))}
-                            >
-                                <option value={10}>10개</option>
-                                <option value={20}>20개</option>
-                                <option value={30}>30개</option>
-                            </select>
-                        </>
-                    )}
+                    <>
+                        <button className="boardsidebarToggleButton" onClick={toggleSidebar}>
+                            <FaBars />
+                        </button>
+                        <button className="boardWriteButton" onClick={() => navigate('/write')}
+                            style={{ display: adminUserNick === '관리자' ? 'visible' : 'none' }}>
+                            글쓰기
+                        </button>
+                        <select
+                            className="boardSortBySelect"
+                            value={sortBy}
+                            onChange={handleSortChange}
+                        >
+                            <option value="date">작성일</option>
+                            <option value="views">조회수</option>
+                            <option value="title">제목</option>
+                        </select>
+                        <select
+                            className="boardItemsPerPageSelect"
+                            value={itemsPerPage}
+                            onChange={(e) => setItemsPerPage(Number(e.target.value))}
+                        >
+                            <option value={10}>10개</option>
+                            <option value={20}>20개</option>
+                            <option value={30}>30개</option>
+                        </select>
+                    </>
+                )}
                 {/* 웹화면 */}
                 {!isMobile && (
                     <div className="boardSearchForm">
@@ -390,13 +400,23 @@ const Board = () => {
                                 <Link to={`/board/${post.bodNum}`}>{post.bodTitle}</Link>
                             </p>
                             <p className="boardListItem boardAuthor">{post.userNick}</p>
-                            <p className="boardListItem boardDate">
-                                {new Date(post.writeDate).toLocaleDateString("ko-KR", {
-                                    year: "numeric",
-                                    month: "2-digit",
-                                    day: "numeric",
-                                }).replace(/\.$/, "")}
-                            </p>
+                            {isMobile && (
+                                <p className="boardListItem boardDate">
+                                    {new Date(post.writeDate).toLocaleDateString("ko-KR", {
+                                        month: "2-digit",
+                                        day: "2-digit",
+                                    }).replace(/\.$/, "")}
+                                </p>
+                            )}
+                            {!isMobile && (
+                                <p className="boardListItem boardDate">
+                                    {new Date(post.writeDate).toLocaleDateString("ko-KR", {
+                                        year: "numeric",
+                                        month: "2-digit",
+                                        day: "numeric",
+                                    }).replace(/\.$/, "")}
+                                </p>
+                            )}
                             <p className="boardListItem boardViews">{post.views}</p>
                         </div>
                     ))

@@ -124,83 +124,91 @@ const Header = () => {
       )}
 
 
-  
+
       {/* 모바일 네비게이션 */}
       {isMobile && (
-  <nav className={`Header_mobileNav ${isMobileMenuOpen ? 'active' : ''}`}>
-    <div
-      className="Header_closeButton"
-      onClick={() => setMobileMenuOpen(false)}
-    >
-      ✕
-    </div>
-    <ul>
-      <li
-        className={location.pathname === '/' ? 'Header_active' : ''}
-        onClick={() => setMobileMenuOpen(false)} // 링크 클릭 시 메뉴 닫기
-      >
-        <Link to="/">도·소매가 정보</Link>
-      </li>
-      <li
-        className={location.pathname === '/board' ? 'Header_active' : ''}
-        onClick={() => setMobileMenuOpen(false)} // 링크 클릭 시 메뉴 닫기
-      >
-        <Link to="/board">게시판</Link>
-      </li>
-      <li
-        className={location.pathname === '/qna' ? 'Header_active' : ''}
-        onClick={() => setMobileMenuOpen(false)} // 링크 클릭 시 메뉴 닫기
-      >
-        <Link to="/qna">QnA</Link>
-      </li>
-    </ul>
-    <div className="Header_mobileButtons">
-      {!loginsuccess ? (
-        <>
-          <button
-            className="Header_mainButton"
-            onClick={() => {
-              setMobileMenuOpen(false); // 메뉴 닫기
-              navigate('/login');
-            }}
+        <nav className={`Header_mobileNav ${isMobileMenuOpen ? 'active' : ''}`}>
+          {loginsuccess && (
+            <span className="Header_HeaderHello">
+              환영합니다<br />
+              <span className="Header_highlight">{userNick}</span>님
+            </span>
+          )}
+          <div
+            className="Header_closeButton"
+            onClick={() => setMobileMenuOpen(false)}
           >
-            로그인
-          </button>
-          <button
-            className="Header_mainButton"
-            onClick={() => {
-              setMobileMenuOpen(false); // 메뉴 닫기
-              navigate('/signup');
-            }}
-          >
-            회원가입
-          </button>
-        </>
-      ) : (
-        <>
-          <button
-            className="Header_mainButton"
-            onClick={() => {
-              setMobileMenuOpen(false); // 메뉴 닫기
-              handleLogInfo();
-            }}
-          >
-            회원수정
-          </button>
-          <button
-            className="Header_mainButton"
-            onClick={() => {
-              setMobileMenuOpen(false); // 메뉴 닫기
-              handleLogout();
-            }}
-          >
-            로그아웃
-          </button>
-        </>
+            ✕
+          </div>
+          <ul>
+            <li
+              className={location.pathname === '/' ? 'Header_active' : ''}
+              onClick={() => setMobileMenuOpen(false)} // 링크 클릭 시 메뉴 닫기
+            >
+              <Link to="/">도·소매가 정보</Link>
+            </li>
+            <li
+              className={location.pathname === '/board' ? 'Header_active' : ''}
+              onClick={() => setMobileMenuOpen(false)} // 링크 클릭 시 메뉴 닫기
+            >
+              <Link to="/board">게시판</Link>
+            </li>
+            <li
+              className={location.pathname === '/qna' ? 'Header_active' : ''}
+              onClick={() => setMobileMenuOpen(false)} // 링크 클릭 시 메뉴 닫기
+            >
+              <Link to="/qna">QnA</Link>
+            </li>
+          </ul>
+
+          <div className="Header_mobileButtons">
+            {!loginsuccess ? (
+
+              <>
+                <button
+                  className="Header_mainButton"
+                  onClick={() => {
+                    setMobileMenuOpen(false); // 메뉴 닫기
+                    navigate('/login');
+                  }}
+                >
+                  로그인
+                </button>
+                <button
+                  className="Header_mainButton"
+                  onClick={() => {
+                    setMobileMenuOpen(false); // 메뉴 닫기
+                    navigate('/signup');
+                  }}
+                >
+                  회원가입
+                </button>
+              </>
+            ) : (
+              <>
+                <button
+                  className="Header_mainButton"
+                  onClick={() => {
+                    setMobileMenuOpen(false); // 메뉴 닫기
+                    handleLogInfo();
+                  }}
+                >
+                  회원수정
+                </button>
+                <button
+                  className="Header_mainButton"
+                  onClick={() => {
+                    setMobileMenuOpen(false); // 메뉴 닫기
+                    handleLogout();
+                  }}
+                >
+                  로그아웃
+                </button>
+              </>
+            )}
+          </div>
+        </nav>
       )}
-    </div>
-  </nav>
-)}
     </header>
   );
 };
