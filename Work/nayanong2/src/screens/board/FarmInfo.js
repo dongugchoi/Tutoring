@@ -20,7 +20,6 @@ const FarmInfo = () => {
   const [error, setError] = useState(null); // 에러 상태
   const [priceType, setPriceType] = useState("retail"); // 검색 유형
 
-  // 분류 데이터
   const categories = [
     { code: "100", name: "식량작물" },
     { code: "200", name: "채소류" },
@@ -28,25 +27,21 @@ const FarmInfo = () => {
     { code: "400", name: "과일류" },
   ];
 
-  // 지역 데이터
   const regions = [
     { code: "1101", name: "서울" },
     { code: "2300", name: "인천" },
   ];
 
-  // 품목 데이터 추출
   const products = Object.keys(FarmData).filter((key) => {
     return FarmData[key]?.some(
       (item) => item.p_itemcategorycode === priceRequestDTO.p_itemcategorycode
     );
   });
 
-  // 품종 데이터 추출
   const kinds = selectedProduct
     ? FarmData[selectedProduct]?.map((item) => ({ kindcode: item.p_kindcode, kindname: item.kindname })) || []
     : [];
 
-  // 검색 실행
   const handleSearch = async () => {
     setLoading(true);
     setError(null);
@@ -73,7 +68,6 @@ const FarmInfo = () => {
     }
   };
 
-  // 분류 변경 핸들러
   const handleCategoryChange = (e) => {
     setPriceRequestDTO((prev) => ({
       ...prev,
@@ -81,7 +75,6 @@ const FarmInfo = () => {
     }));
   };
 
-  // 지역 변경 핸들러
   const handleRegionChange = (e) => {
     setPriceRequestDTO((prev) => ({
       ...prev,
@@ -89,7 +82,6 @@ const FarmInfo = () => {
     }));
   };
 
-  // 품목 변경 핸들러
   const handleProductChange = (e) => {
     setSelectedProduct(e.target.value);
     setPriceRequestDTO((prev) => ({
@@ -98,7 +90,6 @@ const FarmInfo = () => {
     }));
   };
 
-  // 품종 변경 핸들러
   const handleKindChange = (e) => {
     setSelectedKind(e.target.value);
     setPriceRequestDTO((prev) => ({
@@ -108,31 +99,33 @@ const FarmInfo = () => {
   };
 
   return (
-    <div style={{ padding: "20px", fontFamily: "Arial" }}>
-      <h2>소매가격 도매가격 정보 검색</h2>
-      <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+    <div className="FarmInfo_container">
+      <h2 className="FarmInfo_title">소매가격 도매가격 정보 검색</h2>
+      <div className="FarmInfo_form">
         {/* 날짜 선택 */}
-        <div>
-          <label>기간:</label>
-          <div style={{ display: "flex", gap: "10px" }}>
+        <div className="FarmInfo_row">
+          <label className="FarmInfo_label">기간:</label>
+          <div className="FarmInfo_datePicker">
             <DatePicker
               selected={new Date(startDate)}
               onChange={(date) => setStartDate(date.toISOString().split("T")[0])}
               dateFormat="yyyy.MM.dd"
+              className="FarmInfo_input"
             />
             <span>~</span>
             <DatePicker
               selected={new Date(endDate)}
               onChange={(date) => setEndDate(date.toISOString().split("T")[0])}
               dateFormat="yyyy.MM.dd"
+              className="FarmInfo_input"
             />
           </div>
         </div>
 
         {/* 분류 */}
-        <div>
-          <label>분류:</label>
-          <select onChange={handleCategoryChange}>
+        <div className="FarmInfo_row">
+          <label className="FarmInfo_label">분류:</label>
+          <select onChange={handleCategoryChange} className="FarmInfo_select">
             <option value="">전체</option>
             {categories.map((category) => (
               <option key={category.code} value={category.code}>
@@ -143,9 +136,9 @@ const FarmInfo = () => {
         </div>
 
         {/* 품목 */}
-        <div>
-          <label>품목:</label>
-          <select onChange={handleProductChange}>
+        <div className="FarmInfo_row">
+          <label className="FarmInfo_label">품목:</label>
+          <select onChange={handleProductChange} className="FarmInfo_select">
             <option value="">전체</option>
             {products.map((product) => (
               <option key={product} value={product}>
@@ -156,9 +149,9 @@ const FarmInfo = () => {
         </div>
 
         {/* 품종 */}
-        <div>
-          <label>품종:</label>
-          <select onChange={handleKindChange}>
+        <div className="FarmInfo_row">
+          <label className="FarmInfo_label">품종:</label>
+          <select onChange={handleKindChange} className="FarmInfo_select">
             <option value="">전체</option>
             {kinds.map((kind, index) => (
               <option key={index} value={kind.kindcode}>
@@ -169,9 +162,9 @@ const FarmInfo = () => {
         </div>
 
         {/* 지역 */}
-        <div>
-          <label>지역:</label>
-          <select onChange={handleRegionChange}>
+        <div className="FarmInfo_row">
+          <label className="FarmInfo_label">지역:</label>
+          <select onChange={handleRegionChange} className="FarmInfo_select">
             <option value="">전체</option>
             {regions.map((region) => (
               <option key={region.code} value={region.code}>
@@ -182,18 +175,24 @@ const FarmInfo = () => {
         </div>
 
         {/* 검색 버튼 */}
-        <div style={{ display: "flex", gap: "20px" }}>
-          <button onClick={() => setPriceType("retail") || handleSearch()}>
+        <div className="FarmInfo_buttons">
+          <button
+            className="FarmInfo_button"
+            onClick={() => setPriceType("retail") || handleSearch()}
+          >
             소매가로 검색
           </button>
-          <button onClick={() => setPriceType("wholeSale") || handleSearch()}>
+          <button
+            className="FarmInfo_button"
+            onClick={() => setPriceType("wholeSale") || handleSearch()}
+          >
             도매가로 검색
           </button>
         </div>
 
         {/* 로딩 상태 및 에러 메시지 */}
-        {loading && <p>로딩 중...</p>}
-        {error && <p style={{ color: "red" }}>{error}</p>}
+        {loading && <p className="FarmInfo_loading">로딩 중...</p>}
+        {error && <p className="FarmInfo_error">{error}</p>}
       </div>
     </div>
   );

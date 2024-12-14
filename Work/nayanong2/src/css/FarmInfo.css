@@ -1,0 +1,92 @@
+.FarmInfo_container {
+    padding: 20px;
+    font-family: "SSFlowerRoad", sans-serif;
+  }
+  
+  .FarmInfo_title {
+    font-size: 24px;
+    font-weight: bold;
+    color: #000000;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  
+  .FarmInfo_form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .FarmInfo_row {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .FarmInfo_label {
+    font-size: 16px;
+    font-weight: bold;
+    color: #000000;
+  }
+  
+  .FarmInfo_input,
+  .FarmInfo_select {
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #d4a373;
+    border-radius: 5px;
+    box-sizing: border-box;
+  }
+  
+  .FarmInfo_buttons {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 20px;
+  }
+  
+  .FarmInfo_button {
+    font-size: 16px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    background-color: #ffffff;
+    color: #000000;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease, color 0.3s ease;
+    font-family: "SSFlowerRoad", sans-serif;
+  }
+  
+  .FarmInfo_button:hover {
+    background-color: #d4a373;
+    color: #ffffff;
+  }
+  
+  .FarmInfo_error {
+    color: red;
+    font-size: 14px;
+    text-align: center;
+  }
+  
+  .FarmInfo_loading {
+    color: #000000;
+    font-size: 16px;
+    text-align: center;
+  }
+  
+  /* 반응형 스타일 */
+  @media (max-width: 768px) {
+    .FarmInfo_form {
+      gap: 15px;
+    }
+  
+    .FarmInfo_buttons {
+      flex-direction: column;
+      gap: 10px;
+    }
+  
+    .FarmInfo_button {
+      width: 100%;
+    }
+  }
+  
