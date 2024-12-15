@@ -62,7 +62,7 @@ export const recentSevenDaysDataAtom = atom({
 export const farmDataAtom = atom({
     key: "farmDataAtom",
     default: itemMappings,
-})  
+})
 
 //선택된 아이템을 저장해주는 상태
 export const selectedItemAtom = atom({
@@ -75,3 +75,13 @@ export const priceTypeCodeStateAtom = atom({
     key: 'priceTypeCodeStateAtom',
     default: '',
 });
+
+export const searchResultsAtom = atom({
+    key: "searchResultsAtom",
+    default: [], // 검색 결과의 기본값
+});
+
+export const titleAtom = atom({
+    key: "titleAtom",
+    default: "평균 가격 결과", // 제목의 기본값
+  });

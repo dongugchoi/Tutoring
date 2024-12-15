@@ -4,21 +4,29 @@ import {
   startDateStateAtom,
   endDateStateAtom,
   priceRequestDTOAtom,
+  searchResultsAtom,
+  titleAtom,
 } from "../../recoil/FarmRecoil";
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
-import FarmData from "../../assets/FarmData.json"; // FarmData.json import
+import FarmData from "../../assets/FarmData.json";
 import axios from "axios";
+import "../../css/FarmInfo.css";
+import Graph from "./Graph";
+import { ko } from "date-fns/locale";
+
 
 const FarmInfo = () => {
-  const [startDate, setStartDate] = useRecoilState(startDateStateAtom); // 시작 날짜 리코일 상태
-  const [endDate, setEndDate] = useRecoilState(endDateStateAtom); // 종료 날짜 리코일 상태
-  const [priceRequestDTO, setPriceRequestDTO] = useRecoilState(priceRequestDTOAtom); // 전체 요청 데이터
-  const [selectedProduct, setSelectedProduct] = useState(""); // 선택된 품목 상태
-  const [selectedKind, setSelectedKind] = useState(""); // 선택된 품종 상태
-  const [loading, setLoading] = useState(false); // 로딩 상태
-  const [error, setError] = useState(null); // 에러 상태
-  const [priceType, setPriceType] = useState("retail"); // 검색 유형
+  const [startDate, setStartDate] = useRecoilState(startDateStateAtom);
+  const [endDate, setEndDate] = useRecoilState(endDateStateAtom);
+  const [priceRequestDTO, setPriceRequestDTO] = useRecoilState(priceRequestDTOAtom);
+  const [searchResults, setSearchResults] = useRecoilState(searchResultsAtom); // Recoil 상태로 변경
+  const [title, setTitle] = useRecoilState(titleAtom); // Recoil 상태로 변경
+  const [selectedProduct, setSelectedProduct] = useState("");
+  const [selectedKind, setSelectedKind] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [priceType, setPriceType] = useState("retail");
 
   const categories = [
     { code: "100", name: "식량작물" },
@@ -29,7 +37,22 @@ const FarmInfo = () => {
 
   const regions = [
     { code: "1101", name: "서울" },
+    { code: "2100", name: "부산" },
+    { code: "2200", name: "대구" },
     { code: "2300", name: "인천" },
+    { code: "2401", name: "광주" },
+    { code: "2501", name: "대전" },
+    { code: "2601", name: "울산" },
+    { code: "2701", name: "세종" },
+    { code: "3101", name: "경기" },
+    { code: "3201", name: "강원" },
+    { code: "3301", name: "충북" },
+    { code: "3401", name: "충남" },
+    { code: "3501", name: "전북" },
+    { code: "3601", name: "전남" },
+    { code: "3701", name: "경북" },
+    { code: "3801", name: "경남" },
+    { code: "3901", name: "제주" }
   ];
 
   const products = Object.keys(FarmData).filter((key) => {
@@ -39,12 +62,16 @@ const FarmInfo = () => {
   });
 
   const kinds = selectedProduct
-    ? FarmData[selectedProduct]?.map((item) => ({ kindcode: item.p_kindcode, kindname: item.kindname })) || []
+    ? FarmData[selectedProduct]?.map((item) => ({
+        kindcode: item.p_kindcode,
+        kindname: item.kindname,
+      })) || []
     : [];
 
   const handleSearch = async () => {
     setLoading(true);
     setError(null);
+    
 
     const apiUrl =
       priceType === "retail"
@@ -59,73 +86,52 @@ const FarmInfo = () => {
 
     try {
       const response = await axios.post(apiUrl, requestData);
-      console.log("검색 결과:", response.data);
+      const filteredResults = response.data.filter((item) => item.countyname === "평균");
+      setSearchResults(filteredResults);
+
+      // 제목 업데이트
+      const regionName =
+        regions.find((region) => region.code === priceRequestDTO.p_countrycode)?.name || "지역 없음";
+      const productName = FarmData[selectedProduct]?.[0]?.itemname || selectedProduct || "품목 없음";
+      const kindName =
+        FarmData[selectedProduct]?.find((item) => item.p_kindcode === selectedKind)?.kindname ||
+        selectedKind ||
+        "품종 없음";
+
+      setTitle(`${regionName} ${productName}의 ${kindName} 평균 가격`);
     } catch (err) {
-      console.error("요청 실패:", err);
       setError("데이터 요청 중 오류가 발생했습니다.");
     } finally {
       setLoading(false);
     }
   };
 
-  const handleCategoryChange = (e) => {
-    setPriceRequestDTO((prev) => ({
-      ...prev,
-      p_itemcategorycode: e.target.value,
-    }));
-  };
-
-  const handleRegionChange = (e) => {
-    setPriceRequestDTO((prev) => ({
-      ...prev,
-      p_countrycode: e.target.value,
-    }));
-  };
-
-  const handleProductChange = (e) => {
-    setSelectedProduct(e.target.value);
-    setPriceRequestDTO((prev) => ({
-      ...prev,
-      p_itemcode: FarmData[e.target.value]?.[0]?.p_itemcode || "",
-    }));
-  };
-
-  const handleKindChange = (e) => {
-    setSelectedKind(e.target.value);
-    setPriceRequestDTO((prev) => ({
-      ...prev,
-      p_kindcode: e.target.value,
-    }));
-  };
-
   return (
-    <div className="FarmInfo_container">
-      <h2 className="FarmInfo_title">소매가격 도매가격 정보 검색</h2>
-      <div className="FarmInfo_form">
-        {/* 날짜 선택 */}
-        <div className="FarmInfo_row">
-          <label className="FarmInfo_label">기간:</label>
-          <div className="FarmInfo_datePicker">
-            <DatePicker
-              selected={new Date(startDate)}
-              onChange={(date) => setStartDate(date.toISOString().split("T")[0])}
-              dateFormat="yyyy.MM.dd"
-              className="FarmInfo_input"
-            />
-            <span>~</span>
-            <DatePicker
-              selected={new Date(endDate)}
-              onChange={(date) => setEndDate(date.toISOString().split("T")[0])}
-              dateFormat="yyyy.MM.dd"
-              className="FarmInfo_input"
-            />
-          </div>
-        </div>
+    <div className="farmInfo-container">
+      <h2>소매 · 도매 날짜별 평균가격</h2>
+      <div className="farmInfo-datePicker-container">
+        <label>기간:</label>
+        <DatePicker
+          selected={new Date(startDate)}
+          onChange={(date) => setStartDate(date.toISOString().split("T")[0])}
+          dateFormat="yyyy.MM.dd"
+          locale={ko} // 한글 로케일 설정
+          placeholderText="날짜를 선택해주세요" // 입력창 플레이스홀더 한글
+        />
+        <span>~</span>
+        <DatePicker
+          selected={new Date(endDate)}
+          onChange={(date) => setEndDate(date.toISOString().split("T")[0])}
+          dateFormat="yyyy.MM.dd"
+          locale={ko} // 한글 로케일 설정
+          placeholderText="날짜를 선택해주세요" // 입력창 플레이스홀더 한글
+        />
+      </div>
 
-        {/* 분류 */}
-        <div className="FarmInfo_row">
-          <label className="FarmInfo_label">분류:</label>
-          <select onChange={handleCategoryChange} className="FarmInfo_select">
+      <div className="farmInfo-dropdown-container">
+        <div>
+          <label>분류:</label>
+          <select onChange={(e) => setPriceRequestDTO({ ...priceRequestDTO, p_itemcategorycode: e.target.value })}>
             <option value="">전체</option>
             {categories.map((category) => (
               <option key={category.code} value={category.code}>
@@ -135,10 +141,9 @@ const FarmInfo = () => {
           </select>
         </div>
 
-        {/* 품목 */}
-        <div className="FarmInfo_row">
-          <label className="FarmInfo_label">품목:</label>
-          <select onChange={handleProductChange} className="FarmInfo_select">
+        <div>
+          <label>품목:</label>
+          <select onChange={(e) => setSelectedProduct(e.target.value)}>
             <option value="">전체</option>
             {products.map((product) => (
               <option key={product} value={product}>
@@ -148,23 +153,21 @@ const FarmInfo = () => {
           </select>
         </div>
 
-        {/* 품종 */}
-        <div className="FarmInfo_row">
-          <label className="FarmInfo_label">품종:</label>
-          <select onChange={handleKindChange} className="FarmInfo_select">
+        <div>
+          <label>품종:</label>
+          <select onChange={(e) => setSelectedKind(e.target.value)}>
             <option value="">전체</option>
-            {kinds.map((kind, index) => (
-              <option key={index} value={kind.kindcode}>
+            {kinds.map((kind) => (
+              <option key={kind.kindcode} value={kind.kindcode}>
                 {kind.kindname}
               </option>
             ))}
           </select>
         </div>
 
-        {/* 지역 */}
-        <div className="FarmInfo_row">
-          <label className="FarmInfo_label">지역:</label>
-          <select onChange={handleRegionChange} className="FarmInfo_select">
+        <div>
+          <label>지역:</label>
+          <select onChange={(e) => setPriceRequestDTO({ ...priceRequestDTO, p_countrycode: e.target.value })}>
             <option value="">전체</option>
             {regions.map((region) => (
               <option key={region.code} value={region.code}>
@@ -173,27 +176,34 @@ const FarmInfo = () => {
             ))}
           </select>
         </div>
-
-        {/* 검색 버튼 */}
-        <div className="FarmInfo_buttons">
-          <button
-            className="FarmInfo_button"
-            onClick={() => setPriceType("retail") || handleSearch()}
-          >
-            소매가로 검색
-          </button>
-          <button
-            className="FarmInfo_button"
-            onClick={() => setPriceType("wholeSale") || handleSearch()}
-          >
-            도매가로 검색
-          </button>
-        </div>
-
-        {/* 로딩 상태 및 에러 메시지 */}
-        {loading && <p className="FarmInfo_loading">로딩 중...</p>}
-        {error && <p className="FarmInfo_error">{error}</p>}
       </div>
+
+      <div className="farmInfo-button-container">
+        <button onClick={() => setPriceType("retail") || handleSearch()}>소매가로 검색</button>
+        <button onClick={() => setPriceType("wholeSale") || handleSearch()}>도매가로 검색</button>
+      </div>
+
+      <div className="farmInfo-result-container">
+        {loading ? (
+          <p>로딩 중...</p>
+        ) : error ? (
+          <p>{error}</p>
+        ) : (
+          <>
+            <h3>{title}</h3>
+            <ul>
+              {searchResults.map((item, index) => (
+                <li key={index}>
+                  날짜: {item.regday}, 평균 가격: {item.price}원
+                </li>
+              ))}
+            </ul>
+          </>
+        )}
+      </div>
+
+      {/* Graph 컴포넌트 */}
+      <Graph />
     </div>
   );
 };
