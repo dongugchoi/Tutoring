@@ -1,11 +1,12 @@
-import React, { useState } from "react";
-import { useRecoilState } from "recoil";
+import React, { useState, useEffect } from "react";
+import { useRecoilState, useSetRecoilState } from "recoil";
 import {
   startDateStateAtom,
   endDateStateAtom,
   priceRequestDTOAtom,
   searchResultsAtom,
   titleAtom,
+  averagePriceAtom,
 } from "../../recoil/FarmRecoil";
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
@@ -15,18 +16,18 @@ import "../../css/FarmInfo.css";
 import Graph from "./Graph";
 import { ko } from "date-fns/locale";
 
-
 const FarmInfo = () => {
   const [startDate, setStartDate] = useRecoilState(startDateStateAtom);
   const [endDate, setEndDate] = useRecoilState(endDateStateAtom);
   const [priceRequestDTO, setPriceRequestDTO] = useRecoilState(priceRequestDTOAtom);
-  const [searchResults, setSearchResults] = useRecoilState(searchResultsAtom); // Recoil 상태로 변경
-  const [title, setTitle] = useRecoilState(titleAtom); // Recoil 상태로 변경
+  const [searchResults, setSearchResults] = useRecoilState(searchResultsAtom || []);
+  const [title, setTitle] = useRecoilState(titleAtom);
   const [selectedProduct, setSelectedProduct] = useState("");
   const [selectedKind, setSelectedKind] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [priceType, setPriceType] = useState("retail");
+  const setAveragePrice = useSetRecoilState(averagePriceAtom);
 
   const categories = [
     { code: "100", name: "식량작물" },
@@ -43,17 +44,33 @@ const FarmInfo = () => {
     { code: "2401", name: "광주" },
     { code: "2501", name: "대전" },
     { code: "2601", name: "울산" },
+    { code: "3111", name: "수원" },
+    { code: "3214", name: "강릉" },
+    { code: "3211", name: "춘천" },
+    { code: "3311", name: "청주" },
+    { code: "3511", name: "전주" },
+    { code: "3711", name: "포항" },
+    { code: "3911", name: "제주" },
+    { code: "3613", name: "순천" },
+    { code: "3714", name: "안동" },
+    { code: "3814", name: "창원" },
+    { code: "3145", name: "용인" },
     { code: "2701", name: "세종" },
-    { code: "3101", name: "경기" },
-    { code: "3201", name: "강원" },
-    { code: "3301", name: "충북" },
-    { code: "3401", name: "충남" },
-    { code: "3501", name: "전북" },
-    { code: "3601", name: "전남" },
-    { code: "3701", name: "경북" },
-    { code: "3801", name: "경남" },
-    { code: "3901", name: "제주" }
+    { code: "3112", name: "성남" },
+    { code: "3138", name: "고양" },
+    { code: "3411", name: "천안" },
+    { code: "3818", name: "김해" },
   ];
+
+  useEffect(() => {
+    setPriceRequestDTO({
+      ...priceRequestDTO,
+      p_itemcategorycode: "100", // 분류: 식량작물
+      p_countrycode: "1101", // 지역: 서울
+    });
+    setSelectedProduct("쌀"); // 품목: 쌀
+    setSelectedKind("20kg"); // 품종: 20kg
+  }, []);
 
   const products = Object.keys(FarmData).filter((key) => {
     return FarmData[key]?.some(
@@ -63,15 +80,14 @@ const FarmInfo = () => {
 
   const kinds = selectedProduct
     ? FarmData[selectedProduct]?.map((item) => ({
-        kindcode: item.p_kindcode,
-        kindname: item.kindname,
-      })) || []
+      kindcode: item.p_kindcode,
+      kindname: item.kindname,
+    })) || []
     : [];
 
   const handleSearch = async () => {
     setLoading(true);
     setError(null);
-    
 
     const apiUrl =
       priceType === "retail"
@@ -89,6 +105,13 @@ const FarmInfo = () => {
       const filteredResults = response.data.filter((item) => item.countyname === "평균");
       setSearchResults(filteredResults);
 
+      // 평균 가격 계산
+      const total = filteredResults.reduce((sum, item) => sum + parseFloat(item.price || 0), 0);
+      const average = total / (filteredResults.length || 1);
+
+      // Recoil Atom에 평균 가격 저장
+      setAveragePrice(average);
+
       // 제목 업데이트
       const regionName =
         regions.find((region) => region.code === priceRequestDTO.p_countrycode)?.name || "지역 없음";
@@ -98,7 +121,7 @@ const FarmInfo = () => {
         selectedKind ||
         "품종 없음";
 
-      setTitle(`${regionName} ${productName}의 ${kindName} 평균 가격`);
+      setTitle(`${regionName} ${productName}의 (품종:${kindName}) 평균 가격`);
     } catch (err) {
       setError("데이터 요청 중 오류가 발생했습니다.");
     } finally {
@@ -106,25 +129,30 @@ const FarmInfo = () => {
     }
   };
 
+
   return (
     <div className="farmInfo-container">
       <h2>소매 · 도매 날짜별 평균가격</h2>
+      {/* 조건부로 주말과 공휴일 메시지 표시 */}
+      {searchResults.length === 0 && !loading && (
+        <p className="FarmInfo-warning-message">※주말과 공휴일은 조회가 불가합니다.</p>
+      )}
       <div className="farmInfo-datePicker-container">
         <label>기간:</label>
         <DatePicker
           selected={new Date(startDate)}
           onChange={(date) => setStartDate(date.toISOString().split("T")[0])}
           dateFormat="yyyy.MM.dd"
-          locale={ko} // 한글 로케일 설정
-          placeholderText="날짜를 선택해주세요" // 입력창 플레이스홀더 한글
+          locale={ko}
+          placeholderText="날짜를 선택해주세요"
         />
         <span>~</span>
         <DatePicker
           selected={new Date(endDate)}
           onChange={(date) => setEndDate(date.toISOString().split("T")[0])}
           dateFormat="yyyy.MM.dd"
-          locale={ko} // 한글 로케일 설정
-          placeholderText="날짜를 선택해주세요" // 입력창 플레이스홀더 한글
+          locale={ko}
+          placeholderText="날짜를 선택해주세요"
         />
       </div>
 
@@ -183,27 +211,30 @@ const FarmInfo = () => {
         <button onClick={() => setPriceType("wholeSale") || handleSearch()}>도매가로 검색</button>
       </div>
 
-      <div className="farmInfo-result-container">
-        {loading ? (
-          <p>로딩 중...</p>
-        ) : error ? (
-          <p>{error}</p>
-        ) : (
-          <>
-            <h3>{title}</h3>
-            <ul>
-              {searchResults.map((item, index) => (
-                <li key={index}>
-                  날짜: {item.regday}, 평균 가격: {item.price}원
-                </li>
-              ))}
-            </ul>
-          </>
-        )}
+      {searchResults.length > 0 && 
+      <div className="farmInfo-result-wrapper">
+        <div className="farmInfo-result-container">
+          {loading ? (
+            <p>로딩 중...</p>
+          ) : error ? (
+            <p>{error}</p>
+          ) : (
+            <>
+              <h3>{title}</h3>
+              <ul>
+                {searchResults.map((item, index) => (
+                  <li key={index}>
+                    날짜: {item.regday}, 평균 가격: {item.price}원
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
+        </div>
       </div>
-
+  }
       {/* Graph 컴포넌트 */}
-      <Graph />
+      {searchResults.length > 0 && <Graph />}
     </div>
   );
 };

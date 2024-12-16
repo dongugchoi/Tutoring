@@ -66,8 +66,8 @@ export const farmDataAtom = atom({
 
 //선택된 아이템을 저장해주는 상태
 export const selectedItemAtom = atom({
-    key: "selectedItemAtom", // 고유 키
-    default: null, // 기본값은 null
+    key: "selectedItemAtom", 
+    default: null, 
 });
 
 //도매와 소매를 관리해주는 상태
@@ -78,10 +78,15 @@ export const priceTypeCodeStateAtom = atom({
 
 export const searchResultsAtom = atom({
     key: "searchResultsAtom",
-    default: [], // 검색 결과의 기본값
+    default: [], 
 });
 
 export const titleAtom = atom({
     key: "titleAtom",
-    default: "평균 가격 결과", // 제목의 기본값
+    default: "평균 가격 결과", 
+  });
+
+  export const averagePriceAtom = atom({
+    key: "averagePriceAtom", 
+    default: 0, 
   });
