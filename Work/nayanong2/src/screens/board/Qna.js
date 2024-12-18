@@ -5,6 +5,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { clientNumAtom, userNickAtom } from '../../recoil/UserRecoil';
+import { API_BASE_URL } from '../../service/api-config';
 
 const Qna = () => {
     // 모달 상태
@@ -104,7 +105,7 @@ const Qna = () => {
     useEffect(() => {
         const adminQnaList = async () => {
             try {
-                const response = await axios.get(`http://localhost:7070/qna`);
+                const response = await axios.get(`${API_BASE_URL}/qna`);
                 setQnaList(response.data); // 받아온 데이터를 qnaList에 저장
             } catch (error) {
                 console.log(error.response?.data || '데이터 가져오기 실패');
@@ -122,7 +123,7 @@ const Qna = () => {
         e.preventDefault();
         const token = localStorage.getItem('ACCESS_TOKEN');
         try {
-            const response = await axios.post(`http://localhost:7070/qna`, formData, {
+            const response = await axios.post(`${API_BASE_URL}/qna`, formData, {
                 headers: {
                     Authorization: `Bearer ${token}`, // 인증 토큰 추가
                 },

@@ -15,6 +15,7 @@ import axios from "axios";
 import "../../css/FarmInfo.css";
 import Graph from "./Graph";
 import { ko } from "date-fns/locale";
+import { API_BASE_URL } from '../../service/api-config';
 
 const FarmInfo = () => {
   const [startDate, setStartDate] = useRecoilState(startDateStateAtom);
@@ -62,21 +63,10 @@ const FarmInfo = () => {
     { code: "3818", name: "김해" },
   ];
 
-  useEffect(() => {
-    setPriceRequestDTO({
-      ...priceRequestDTO,
-      p_itemcategorycode: "100", // 분류: 식량작물
-      p_countrycode: "", //
-    });
-    setSelectedProduct("쌀"); // 품목: 쌀
-    setSelectedKind("20kg"); // 품종: 20kg
-  }, []);
-
   // priceType 상태가 변경될 때마다 handleSearch 실행
   useEffect(() => {
-    if (priceType) {
-      handleSearch();
-    }
+    // priceType 변경 시 검색 실행 대신 로그만 출력
+    console.log("priceType이 변경되었습니다:", priceType);
   }, [priceType]);
 
 
@@ -100,9 +90,23 @@ const FarmInfo = () => {
     : [];
 
   const handleSearch = async () => {
+    if (!selectedProduct || !selectedKind) {
+      alert("품목이나 품종이 선택되지 않았습니다.");
+      return; // 빈 값일 경우 서버 요청을 하지 않음
+    }
+
     setLoading(true);
     setError(null);
+    setSearchResults([]);
 
+    let adjustedStartDate = startDate;
+    if (startDate === endDate) {
+      const date = new Date(startDate);
+      date.setDate(date.getDate() - 1); // 하루 빼기
+      adjustedStartDate = date.toISOString().split("T")[0]; // ISO 문자열로 변환
+    }
+  
+  
     const selectedItemCode =
       FarmData[selectedProduct]?.[0]?.p_itemcode || "";
 
@@ -115,12 +119,12 @@ const FarmInfo = () => {
 
     const apiUrl =
       priceType === "retail"
-        ? "http://localhost:7070/retail/price/all"
-        : "http://localhost:7070/wholeSale/price/all";
+        ? `${API_BASE_URL}/retail/price/all`
+        : `${API_BASE_URL}/wholeSale/price/all`;
 
     const requestData = {
       ...priceRequestDTO,
-      p_startday: startDate,
+      p_startday: adjustedStartDate,
       p_endday: endDate,
       p_itemcode: selectedItemCode,
       p_kindcode: selectedKindCode, // FarmData에서 가져온 값
@@ -134,6 +138,11 @@ const FarmInfo = () => {
       const response = await axios.post(apiUrl, requestData);
       const filteredResults = response.data.filter((item) => item.countyname === "평균");
       setSearchResults(filteredResults);
+
+      if (!filteredResults || filteredResults.length === 0) {
+        setError("해당 품목을 찾을 수 없습니다.");
+        return;
+      }
 
       console.log("filteredResults", filteredResults);
 
@@ -234,7 +243,10 @@ const FarmInfo = () => {
 
         <div>
           <label>지역:</label>
-          <select onChange={(e) => setPriceRequestDTO({ ...priceRequestDTO, p_countrycode: e.target.value })}>
+          <select   onChange={(e) => {
+      const value = e.target.value === "" ? "" : e.target.value; // 전체 선택 시 빈 문자열
+      setPriceRequestDTO({ ...priceRequestDTO, p_countrycode: value });
+    }}>
             <option value="">전체</option>
             {regions.map((region) => (
               <option key={region.code} value={region.code}>
@@ -242,6 +254,7 @@ const FarmInfo = () => {
               </option>
             ))}
           </select>
+          {!loading && error && <p className="FarmInfo-warning-message">{error}</p>}
         </div>
       </div>
 

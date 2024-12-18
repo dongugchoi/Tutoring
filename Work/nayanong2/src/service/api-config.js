@@ -10,7 +10,7 @@ let backendHost;
 //왼쪽부터 차례대로 진행되며 false,null,undefined가 나오면 평가를 중단하고 값을 반환한다.
 const hostname = window && window.location &&window.location.hostname;
 
-if(hostname == "localhost"){
+if(hostname === "localhost"){
     backendHost = "http://localhost:7070";
 }
 

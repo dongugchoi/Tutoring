@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useRecoilValue } from 'recoil';
 import { clientNumAtom } from '../../recoil/UserRecoil';
+import { API_BASE_URL } from '../../service/api-config';
 
 const WritePost = () => {
     const navigate = useNavigate();
@@ -74,7 +75,7 @@ const WritePost = () => {
         }
         const token = localStorage.getItem("ACCESS_TOKEN"); // 토큰 가져오기
         try {
-            const response = await axios.post('http://localhost:7070/board', formData, {
+            const response = await axios.post(`${API_BASE_URL}/board`, formData, {
                 headers: {
                     Authorization: `Bearer ${token}`, // 인증 토큰 추가
                   },
