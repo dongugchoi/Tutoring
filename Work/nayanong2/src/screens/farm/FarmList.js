@@ -22,7 +22,6 @@ const FarmList = () => {
     const [countryCode, setCountryCode] = useState("");
     const itemMappings = useRecoilValue(farmDataAtom);
     const [priceRequestDTO, setPriceRequestDTO] = useRecoilState(priceRequestDTOAtom);
-
     const setSelectedItemState = useSetRecoilState(selectedItemAtom);
     const setPriceDataState = useSetRecoilState(priceDataAtom);
     const priceData = useRecoilValue(priceDataAtom); // Recoil 상태에서 priceData 구독
@@ -43,7 +42,6 @@ const FarmList = () => {
     // 검색창을 위한 ref
     const searchInputRef = useRef(null);
 
-    // useRef로 리랜더링 되어 카운트 횟수가 초기화되는 것을 방지
     const retryCount = useRef(0);
 
     const handlePriceType = (e) => {
@@ -56,11 +54,11 @@ const FarmList = () => {
     const handleSearch = async (e) => {
         e.preventDefault();
         if (!searchTerm.trim()) {
-            setError("검색어를 입력하세요.");
+            alert("검색어를 입력하세요.")
+            setPriceDataState([]) 
             return;
         }
 
-        // 검색 후 포커스를 해제
         if (searchInputRef.current) {
             searchInputRef.current.blur(); // 검색 후 포커스 해제
         }
@@ -99,15 +97,11 @@ const FarmList = () => {
                     : "http://localhost:7070/retail/price/all";
 
         try {
-            console.log("requests", priceRequestDTO.requests);  // 요청할 데이터가 제대로 전달되는지 확인
-
             const promises = priceRequestDTO.requests.map((request) =>
                 axios.post(apiUrl, request)
             );
 
             const responses = await Promise.all(promises);
-            console.log("반환 데이터 :", responses);
-
             let transformedData = responses.flatMap((response) => {
                 return response.data?.map((item) => {
                     if (!item) return null;
@@ -125,51 +119,48 @@ const FarmList = () => {
                     };
                 }).filter(item => item !== null);
             });
+            console.log("받은 데이터:", transformedData);
 
-            console.log("요청 데이터 :", priceRequestDTO);
-            console.log("최종 변환된 데이터:", transformedData);
-
-            // 데이터가 없으면 시작일을 1일 빼서 다시 시도
             if (transformedData.length === 0) {
-                if (retryCount.current < 7) { // 7일 전 까지 시도 제한
-                    const newStartDateState = getPreviousDay(startDateState);  // 1일 빼는 함수 사용
-                    setStartDateState(newStartDateState);  // 새로운 시작일로 설정
-                    retryCount.current += 1;  // 재시도 횟수 증가
-                    return getAllPrice();  // 데이터를 다시 요청
+                if (retryCount.current < 7) {
+                    const newStartDateState = getPreviousDay(startDateState);  
+                    setStartDateState(newStartDateState);  
+                    retryCount.current += 1;  
+                    return getAllPrice();  
+                    
                 } else {
                     setError("해당 품목을 찾을 수 없습니다.");
-                    return;  // 더 이상 재시도하지 않음
+                    setPriceDataState([]) 
+                    return; 
                 }
             }
 
-            setPriceDataState(transformedData);  // 데이터를 상태에 설정
-            setMessage("");  // 오류 메시지 초기화
+            setPriceDataState(transformedData); 
+            setMessage("");  
 
         } catch (error) {
             console.error("Error fetching data:", error);
-            setPriceDataState([]);  // 실패 시 데이터 상태 초기화
+            setPriceDataState([]);  
             setError("서버 요청 중 오류가 발생했습니다.");
         } finally {
-            setLoading(false);  // 로딩 상태 종료
+            setLoading(false);  
         }
     };
 
-    // priceRequestDTO 상태가 업데이트되면 getAllPrice 호출
     useEffect(() => {
-        // priceRequestDTO.requests가 undefined가 아닌지 확인하고, 배열이어야 .length 사용 가능
         if (priceRequestDTO.requests && priceRequestDTO.requests.length > 0) {
             getAllPrice();
         }
-    }, [priceRequestDTO]); // priceRequestDTO가 변경될 때마다 실행
+    }, [priceRequestDTO]);
 
-
-    // 검색창에 포커스가 생기면 통합검색 결과 숨기기
     const handleFocus = () => {
         setSearchCompleted(false);
     };
 
+    
+
     return (
-        <div className="farmListPage">  {/* 클래스 추가 */}
+        <div className="farmListPage">
             <div className="farmContainer">
                 <div className="farmListSearchContainer">
                     <select
@@ -185,18 +176,18 @@ const FarmList = () => {
                     </select>
                     <form className="farmListSearchForm" onSubmit={handleSearch}>
                         <input
-                            ref={searchInputRef} // ref 추가
+                            ref={searchInputRef}
                             placeholder="Search"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            onFocus={handleFocus} // 포커스 시 handleFocus 호출
+                            onFocus={handleFocus} 
                         />
                         <button type="submit">
                             <FaSearch />
                         </button>
                     </form>
                 </div>
-                <div className="farmListContainer">
+                <div className={`farmListContainer ${searchCompleted ? 'visible' : ''}`}>
                     {error && <div style={{ color: "red" }}>{error}</div>}
                     <div className="FarmListDetailContainer">
                         <div className="marketGroupedPrices">
@@ -205,24 +196,20 @@ const FarmList = () => {
                                     <h3>"{searchTerm}"에 대한 통합검색 결과 입니다.</h3>
                                 )}
                             </div>
-                            {/* priceData가 없을 때 */}
-                            {priceData.length === 0 ? (
+                            {priceData.length === 0  && !error ? (
                                 <div>검색어를 입력하세요.</div>
                             ) : (
                                 <>
-                                    {/* priceData가 있을 때 */}
                                     {Object.entries(priceData
                                         .filter(item => item.marketname !== "null" && !isNaN(item.price))
                                         .reduce((acc, item) => {
-                                            // marketname을 기준으로 그룹화
                                             if (!acc[item.marketname]) {
-                                                acc[item.marketname] = [];  // acc는 누적된 객체, 없으면 새로운 배열 생성
+                                                acc[item.marketname] = [];
                                             }
-                                            acc[item.marketname].push(item);  // 해당 marketname에 item 추가
-                                            return acc;  // 누적된 객체(acc)를 반환
+                                            acc[item.marketname].push(item);
+                                            return acc;
                                         }, {}))
                                         .map(([marketName, marketGroup]) => {
-                                            // 가장 최신 날짜 항목만 선택
                                             const latestItem = marketGroup.reduce((latest, current) => {
                                                 const latestDate = new Date(latest.date);
                                                 const currentDate = new Date(current.date);

@@ -33,18 +33,6 @@ const Qna = () => {
     const [date, setDate] = useState('');
     const navigate = useNavigate('');
 
-
-
-    useEffect(() => {
-        // body에 클래스 추가
-        document.body.classList.add('no-scroll');
-
-        // 언마운트 시 클래스 제거
-        return () => {
-            document.body.classList.remove('no-scroll');
-        };
-    }, []);
-
     //날짜 함수
     useEffect(() => {
         const updateDate = () => {
@@ -251,7 +239,6 @@ const Qna = () => {
                     </div>
                 </div>
             )}
-
 
         </div>
     );

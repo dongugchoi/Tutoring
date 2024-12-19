@@ -6,6 +6,9 @@ import sweetpotatoImage from '../../assets/sweetpotato.png';
 import strawberryImage from '../../assets/strawberry.png';
 import axios from "axios";
 import farmData from '../../assets/FarmData.json';
+import { Line } from "react-chartjs-2";
+import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, plugins } from 'chart.js';
+import { Label } from "recharts";
 
 // 날짜에서 하루 전 날짜 구하기
 const getPreviousDay = (startDateState) => {
@@ -14,17 +17,29 @@ const getPreviousDay = (startDateState) => {
     return date.toISOString().split('T')[0];  // 'YYYY-MM-DD' 형식으로 반환  
 };
 
+// Chart.js 등록
+ChartJS.register(
+    CategoryScale,
+    LinearScale,
+    PointElement,
+    LineElement,
+    Title,
+    Tooltip,
+    Legend
+);
+
 const FarmItem = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [priceData, setPriceData] = useState([]); // 가격 데이터
     const [countryCode, setCountryCode] = useState("");
     const [currentItemIndex, setCurrentItemIndex] = useState(0);  // 현재 품목을 추적
-    const items = ["당근", "배추", "고구마", "딸기"];  // 품목 목록
+    const items = ["양배추", "당근", "고구마", "딸기"];  // 품목 목록
 
     const [startDateState, setStartDateState] = useState(() => {
         const date = new Date();
-        date.setDate(date.getDate() - 1); // 어제 날짜
+        // 조회 시작 날짜를 이틀 전으로 설정(아침에 거래 내역이 없어 조회가 안 되는 것을 방지)
+        date.setDate(date.getDate() - 2);
         return date.toISOString().split('T')[0];  // 'YYYY-MM-DD' 형식으로 반환
     });
 
@@ -35,8 +50,8 @@ const FarmItem = () => {
 
     // 품목별 이미지 매핑
     const itemImages = {
+        양배추: cabbageImage,
         당근: carrotImage,
-        배추: cabbageImage,
         고구마: sweetpotatoImage,
         딸기: strawberryImage
     };
@@ -59,7 +74,7 @@ const FarmItem = () => {
             const responses = await Promise.all(promises);
 
             let farmItemData = responses.flatMap((response) => {
-                console.log("응답 데이터:", response.data);
+                console.log("응답 데이터 : ", response.data);
 
                 if (Array.isArray(response.data)) {
                     return response.data.map((item) => {
@@ -124,6 +139,38 @@ const FarmItem = () => {
         }
     }, []); // 빈 배열을 넣어서 처음 렌더링 시에만 실행되도록 설정
 
+    // 그래프 데이터
+    const itemChart = {
+        labels: priceData.map((item) => item.date), // 날짜
+        datasets: [
+            {
+                label: "소매가 그래프",
+                data: priceData.map((item) => item.price), // 가격
+                fill: false,
+                borderColor: "rgba(75, 192, 192, 1)",
+                tension: 0.1,
+            },
+        ],
+    }
+    //그래프 옵션
+    const itemChartOption = {
+        responsive: true,
+        plugins: {
+            legend: {
+                position: "top",
+            },
+        },
+        scales: {
+            x: {
+                title: {
+                    display: true,
+                    text: "가격 (원)",
+                },
+            },
+        },
+    }
+
+
     // 다음 품목으로 넘어가는 함수
     const handleNext = async () => {
         const nextItemIndex = (currentItemIndex + 1) % items.length; // 다음 품목 인덱스
@@ -175,27 +222,39 @@ const FarmItem = () => {
     return (
         <div className="farmItemContainer">
             <div className="farmItemImageContainer">
-                <img src={itemImages[items[currentItemIndex]]} alt={items[currentItemIndex]} className="farmItem" />
-                {priceData.length > 1 && (
-                    <div>
-                        <h1>{items[currentItemIndex]}</h1>
-                        <div>
-                            <p>기준 날짜: {priceData[0].date}</p>
-                            <p>평균 소매가: {priceData[0].price}</p>
-                        </div>
-                        <div>
-                            <p>기준 날짜: {priceData[1].date}</p>
-                            <p>평균 소매가: {priceData[1].price}</p>
-                        </div>
-                    </div>
-                )}
                 <div>
-                    <button onClick={handlePrevious} className="previousButton">&lt;</button>
-                    <button onClick={handleNext} className="nextButton">&gt;</button>
+                    <h2>{items[currentItemIndex]}</h2>
+                    <img
+                        src={itemImages[items[currentItemIndex]]}
+                        alt={items[currentItemIndex]}
+                        className="farmItem"
+                    />
                 </div>
+                <div>
+                    {priceData.length > 1 && (
+                        <div>
+                            <div>
+                                <p>기준 날짜: {priceData.slice(-2)[0].date}</p>
+                                <p>평균 소매가: {priceData.slice(-2)[0].price}</p>
+                            </div>
+                            <div>
+                                <p>기준 날짜: {priceData.slice(-2)[1].date}</p>
+                                <p>평균 소매가: {priceData.slice(-2)[1].price}</p>
+                            </div>
+                        </div>
+                    )}
+                </div>
+                <div>
+                    {priceData.length > 0 && <Line data={itemChart} options={itemChartOption} />}
+                </div>
+            </div>
+            <div className="buttonContainer">
+                <button onClick={handlePrevious} className="previousButton">&lt;</button>
+                <button onClick={handleNext} className="nextButton">&gt;</button>
             </div>
         </div>
     );
+
 };
 
 export default FarmItem;

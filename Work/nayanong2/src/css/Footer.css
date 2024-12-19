@@ -1,6 +1,7 @@
+
 .footer-container {
   background-color: #FFFFFF;
-  padding: 1.5rem 2rem;
+  padding: 0.5rem 1.5rem;
   border-top: 1px solid #ced4da;
   font-family: "Arial", sans-serif;
   display: flex;
@@ -25,6 +26,7 @@
 
 .footer-content p {
   margin: 0; /* 텍스트 간격 제거 */
+  font-size: 10px;
 }
 
 .footer-content a {
@@ -42,7 +44,7 @@
 @media (min-width: 768px) {
   .footer-container {
     background-color: #FFFFFF;
-    padding: 1.5rem 2rem;
+    padding: 0.5rem 1.5rem;
     border-top: 1px solid #ced4da;
     font-family: "Arial", sans-serif;
     display: flex;
@@ -55,7 +57,7 @@
   }
   
   .footer-logo {
-    max-width: 4.5rem; /* 로고 크기 */
+    max-width: 5.5rem; /* 로고 크기 */
     margin-right: 1rem; /* 로고와 텍스트 사이 간격 */
   }
   
@@ -67,6 +69,8 @@
   
   .footer-content p {
     margin: 0; /* 텍스트 간격 제거 */
+    font-size: 14px;
+
   }
   
   .footer-content a {
@@ -79,3 +83,4 @@
   }
   
 }
+

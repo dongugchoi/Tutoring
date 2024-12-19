@@ -72,7 +72,7 @@ const Graph = () => {
                         />
                         {/* 툴팁 */}
                         <Tooltip
-                            formatter={(value) => [`${value.toLocaleString()}원`, "가격"]} // 정확한 값 표시
+                            formatter={(value) => [`${value.toLocaleString()}원`, "가격"]} 
                             labelFormatter={(label) => `날짜: ${label}`}
                             contentStyle={{
                                 backgroundColor: "#ffffff",
@@ -84,11 +84,12 @@ const Graph = () => {
                         <Line
                             type="monotone"
                             dataKey="price"
-                            stroke="#d4a373"
+                            stroke="rgba(75, 192, 192, 1)" 
                             strokeWidth={2}
-                            dot={{ stroke: "#d4a373", strokeWidth: 2, r: 4 }}
-                            activeDot={{ r: 6, strokeWidth: 2 }}
+                            dot={{ stroke: "rgba(75, 192, 192, 1)", strokeWidth: 2, r: 4 }} 
+                            activeDot={{ r: 6, strokeWidth: 2, fill: "rgba(75, 192, 192, 1)" }} 
                         />
+
                     </LineChart>
                 </ResponsiveContainer>
             ) : (

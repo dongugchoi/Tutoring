@@ -49,7 +49,6 @@
     padding: 20px;
     width: 100%;
     overflow-y: hidden;
-   
     box-sizing: border-box;
 }
 
@@ -60,11 +59,16 @@
     width: 50%;
     max-width: 1000px;
     margin: 0 auto;
-    background-color: #f9f9f9;
+    background-color: #ffffff;
     border-radius: 8px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     min-height: 10vh;
     overflow-x: hidden;
+    display: none;
+}
+
+.farmListContainer.visible {
+    display: block;
 }
 
 /* 셀렉트 박스 스타일 */
@@ -169,7 +173,7 @@
     margin-bottom: 10px;
     border: 1px solid #d4a373;
     border-radius: 5px;
-    background-color: #f9f9f9;
+    background-color: #ffffff;
     cursor: pointer;
 }
 
@@ -235,7 +239,7 @@
 
 /* 각 시장 그룹 항목 스타일 */
 .marketGroupedItem {
-    background-color: #f9f9f9;
+    background-color: #ffffff;
     border: 1px solid #ddd;
     border-radius: 8px;
     padding: 10px;
@@ -297,7 +301,7 @@
         width: 90%;
         max-width: 1000px;
         margin: 0 auto;
-        background-color: #f9f9f9;
+        background-color: #ffffff;
         border-radius: 8px;
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         min-height: 15vh;

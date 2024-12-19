@@ -262,7 +262,7 @@ const FarmInfo = () => {
         <button
           onClick={() => {
             setPriceType("retail");
-            handleSearch(); // 소매가로 검색 시 즉시 실행
+            handleSearch("retail"); // 소매가로 검색 시 즉시 실행
           }}
         >
           소매가로 검색
@@ -270,7 +270,7 @@ const FarmInfo = () => {
         <button
           onClick={() => {
             setPriceType("wholeSale");
-            handleSearch(); // 도매가로 검색 시 즉시 실행
+            handleSearch("wholeSale"); // 도매가로 검색 시 즉시 실행
           }}
         >
           도매가로 검색
