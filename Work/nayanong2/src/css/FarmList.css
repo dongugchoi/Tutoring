@@ -19,6 +19,7 @@
     width: 100%;              /* 너비를 100%로 설정 */
     text-align: center;       /* 텍스트 중앙 정렬 */
     border-radius: 8px;
+    z-index: 999;
   }
 
 .farmListPage .farmContainer {
@@ -49,6 +50,7 @@
     padding: 20px;
     width: 100%;
     overflow-y: hidden;
+    overflow-x: hidden;
     box-sizing: border-box;
 }
 
@@ -56,9 +58,8 @@
 .farmListContainer {
     padding: 20px;
     font-family: Arial, sans-serif;
-    width: 50%;
+    width: 100%;
     max-width: 1000px;
-    margin: 0 auto;
     background-color: #ffffff;
     border-radius: 8px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
@@ -267,6 +268,8 @@
     margin-bottom: 8px;
     color: #333;
 }
+
+
 
 
 @media (max-width: 768px) {

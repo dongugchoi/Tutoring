@@ -408,6 +408,18 @@
   font-family: 'SSFlowerRoad', sans-serif;
 }
 
+.boardSidebarContainer.hide {
+  transform: translateX(-100%);
+  opacity: 0;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.boardSidebarContainer.show {
+  transform: translateX(0);
+  opacity: 1;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
 
 
 

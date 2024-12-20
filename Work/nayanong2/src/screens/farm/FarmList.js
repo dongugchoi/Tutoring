@@ -4,6 +4,7 @@ import { FaSearch } from "react-icons/fa";
 import axios from "axios";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import { priceRequestDTOAtom, farmDataAtom, selectedItemAtom, priceDataAtom, startDateStateAtom, endDateStateAtom } from "../../recoil/FarmRecoil";
+import { API_BASE_URL } from "../../service/api-config";
 
 // p_startday의 날짜를 -1일 하는 함수
 const getPreviousDay = (startDateState) => {
@@ -55,7 +56,7 @@ const FarmList = () => {
         e.preventDefault();
         if (!searchTerm.trim()) {
             alert("검색어를 입력하세요.")
-            setPriceDataState([]) 
+            setPriceDataState([])
             return;
         }
 
@@ -92,9 +93,9 @@ const FarmList = () => {
         setError(null);
 
         const apiUrl =
-            priceType === "retail" ? "http://localhost:7070/retail/price/all"
-                : priceType === "wholeSale" ? "http://localhost:7070/wholeSale/price/all"
-                    : "http://localhost:7070/retail/price/all";
+            priceType === "retail" ? `${API_BASE_URL}/retail/price/all`
+                : priceType === "wholeSale" ? `${API_BASE_URL}/wholeSale/price/all`
+                    : `${API_BASE_URL}/retail/price/all`;
 
         try {
             const promises = priceRequestDTO.requests.map((request) =>
@@ -123,27 +124,27 @@ const FarmList = () => {
 
             if (transformedData.length === 0) {
                 if (retryCount.current < 7) {
-                    const newStartDateState = getPreviousDay(startDateState);  
-                    setStartDateState(newStartDateState);  
-                    retryCount.current += 1;  
-                    return getAllPrice();  
-                    
+                    const newStartDateState = getPreviousDay(startDateState);
+                    setStartDateState(newStartDateState);
+                    retryCount.current += 1;
+                    return getAllPrice();
+
                 } else {
                     setError("해당 품목을 찾을 수 없습니다.");
-                    setPriceDataState([]) 
-                    return; 
+                    setPriceDataState([])
+                    return;
                 }
             }
 
-            setPriceDataState(transformedData); 
-            setMessage("");  
+            setPriceDataState(transformedData);
+            setMessage("");
 
         } catch (error) {
             console.error("Error fetching data:", error);
-            setPriceDataState([]);  
+            setPriceDataState([]);
             setError("서버 요청 중 오류가 발생했습니다.");
         } finally {
-            setLoading(false);  
+            setLoading(false);
         }
     };
 
@@ -157,7 +158,7 @@ const FarmList = () => {
         setSearchCompleted(false);
     };
 
-    
+
 
     return (
         <div className="farmListPage">
@@ -180,7 +181,7 @@ const FarmList = () => {
                             placeholder="Search"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            onFocus={handleFocus} 
+                            onFocus={handleFocus}
                         />
                         <button type="submit">
                             <FaSearch />
@@ -188,15 +189,15 @@ const FarmList = () => {
                     </form>
                 </div>
                 <div className={`farmListContainer ${searchCompleted ? 'visible' : ''}`}>
-                    {error && <div style={{ color: "red" }}>{error}</div>}
                     <div className="FarmListDetailContainer">
                         <div className="marketGroupedPrices">
                             <div className="farmListSearchResult">
                                 {searchCompleted && searchTerm && (
                                     <h3>"{searchTerm}"에 대한 통합검색 결과 입니다.</h3>
                                 )}
+                                {error && <div style={{ color: "red" }}>{error}</div>}
                             </div>
-                            {priceData.length === 0  && !error ? (
+                            {priceData.length === 0 && !error ? (
                                 <div>검색어를 입력하세요.</div>
                             ) : (
                                 <>
@@ -222,7 +223,8 @@ const FarmList = () => {
                                                     <div>
                                                         <p>지역 : {latestItem.countyname}</p>
                                                         <p>제품 : {latestItem.itemname}</p>
-                                                        <p>가격 : {latestItem.price}</p>
+                                                        {/* Intl.NumberFormat() 숫자를 지역화된 형식으로 포멧 (천단위 구분 쉼표 사용) */}
+                                                        <p>가격 : {new Intl.NumberFormat().format(latestItem.price)}원</p>
                                                         <p>단위 : {latestItem.kindname}</p>
                                                         <p>날짜 : {latestItem.date}</p>
                                                     </div>

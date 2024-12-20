@@ -4,8 +4,9 @@ import { FaBars, FaSearch } from 'react-icons/fa';
 import '../../css/Board.css';
 import '../../css/SideBar.css';
 import axios from 'axios';
-import { useSetRecoilState } from "recoil";
+import { useSetRecoilState, useRecoilValue } from "recoil";
 import { searchboardResultsAtom } from "../../recoil/BoardRecoil"
+import { scrollAtom } from '../../recoil/ScrollRecoil'
 import { API_BASE_URL } from '../../service/api-config';
 
 
@@ -22,7 +23,9 @@ const Board = () => {
     const [sortBy, setSortBy] = useState('date');
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
     const setSearchResults = useSetRecoilState(searchboardResultsAtom);
- 
+    const scrollPosition = useRecoilValue(scrollAtom); // Scroll 상태
+    const isVisible = scrollPosition < 80; // 헤더 보임 여부
+
     useEffect(() => {
         const handleResize = () => {
             setIsMobile(window.innerWidth <= 768);
@@ -92,7 +95,7 @@ const Board = () => {
             setLoading(false)
         }
     }
-    
+
 
     // 한 페이지에 렌더링되는 게시글의 수 설정
     // 페이지 변경
@@ -102,6 +105,7 @@ const Board = () => {
         //페이지 업데이트시 스크롤을 상단을 위치
         window.scrollTo(0, 0)
     };
+
 
 
     // 검색 함수
@@ -190,7 +194,7 @@ const Board = () => {
         }
     };
 
-    
+
 
 
     const totalPages = Math.ceil(posts.length / itemsPerPage);
@@ -209,6 +213,7 @@ const Board = () => {
         getList();
     }, [sortBy]);
 
+    const sidebarClassName = isSidebarVisible && isVisible ? 'boardSidebarContainer show' : 'boardSidebarContainer hide';
 
     return (
         <div className="boardContainer">
@@ -216,8 +221,7 @@ const Board = () => {
             {isMobile && (
                 <h2 className="boardname">자유게시판</h2>
             )}
-            <div className={`boardSidebarContainer ${isSidebarVisible ? 'show' : 'hide'}`}>
-
+            <div className={sidebarClassName}>
                 <button className="boardCloseSidebarButton" onClick={toggleSidebar}>
                     ✖
                 </button>
@@ -231,7 +235,6 @@ const Board = () => {
                 </ul>
             </div>
 
-
             {/* 작성일 및 페이지당 항목 수 선택 */}
             {!isMobile && (
                 <div className="boardOptionsContainer">
@@ -239,24 +242,24 @@ const Board = () => {
                         <h2 className="boardname">자유게시판</h2>
                     </div>
                     <div>
-                    <select
-                        className="boardSortBySelect"
-                        value={sortBy}
-                        onChange={handleSortChange}
-                    >
-                        <option value="date">작성일</option>
-                        <option value="views">조회수</option>
-                        <option value="title">제목</option>
-                    </select>
-                    <select
-                        className="boardItemsPerPageSelect"
-                        value={itemsPerPage}
-                        onChange={(e) => setItemsPerPage(Number(e.target.value))}
-                    >
-                        <option value={10}>10개</option>
-                        <option value={20}>20개</option>
-                        <option value={30}>30개</option>
-                    </select>
+                        <select
+                            className="boardSortBySelect"
+                            value={sortBy}
+                            onChange={handleSortChange}
+                        >
+                            <option value="date">작성일</option>
+                            <option value="views">조회수</option>
+                            <option value="title">제목</option>
+                        </select>
+                        <select
+                            className="boardItemsPerPageSelect"
+                            value={itemsPerPage}
+                            onChange={(e) => setItemsPerPage(Number(e.target.value))}
+                        >
+                            <option value={10}>10개</option>
+                            <option value={20}>20개</option>
+                            <option value={30}>30개</option>
+                        </select>
                     </div>
                 </div>
             )}
