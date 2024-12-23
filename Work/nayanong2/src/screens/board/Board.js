@@ -38,6 +38,7 @@ const Board = () => {
     const toggleSidebar = () => {
         setIsSidebarVisible((prevState) => !prevState);
     };
+    
 
     const handleSortChange = (e) => {
         setSortBy(e.target.value);
@@ -55,46 +56,47 @@ const Board = () => {
             );
             if (response.status === 200) {
                 // 원본 데이터를 sortedPost로 복사
-                let sortedPost = response.data
-
+                let sortedPost = response.data;
+    
                 // 작성자의 게시글과 다른 유저의 게시글 분리
-                const adminPost = sortedPost.filter(post => post.userNick === "관리자").reverse();
-                const otherPost = sortedPost.filter(post => post.userNick !== "관리자")
-
+                const adminPost = sortedPost.filter(post => post.userNick === "관리자").reverse().slice(0, 3); // 공지사항 3개로 제한
+                const otherPost = sortedPost.filter(post => post.userNick !== "관리자");
+    
                 // 다른 유저의 게시글을 정렬
-                let sortedOtherPost = [...otherPost]
-
+                let sortedOtherPost = [...otherPost];
+    
                 switch (sortBy) {
                     case 'date':
                         sortedOtherPost = sortedOtherPost.sort((a, b) => {
-                            const dateA = new Date(a.created_at)
-                            const dateB = new Date(b.created_at)
-                            return dateB - dateA
-                        }).reverse()// 최신순
-                        break
+                            const dateA = new Date(a.created_at);
+                            const dateB = new Date(b.created_at);
+                            return dateB - dateA;
+                        }).reverse(); // 최신순
+                        break;
                     case 'views':
-                        sortedOtherPost = sortedOtherPost.sort((a, b) => b.views - a.views);// 조회수 순
-                        break
+                        sortedOtherPost = sortedOtherPost.sort((a, b) => b.views - a.views); // 조회수 순
+                        break;
                     case 'title':
-                        sortedOtherPost = sortedOtherPost.sort((a, b) => a.bodTitle.localeCompare(b.bodTitle)) // 제목순
-                        break
+                        sortedOtherPost = sortedOtherPost.sort((a, b) => a.bodTitle.localeCompare(b.bodTitle)); // 제목순
+                        break;
                     default:
-                        break
+                        break;
                 }
-
+    
                 // 관리자 게시글을 최상단에 두고 나머지 게시글들을 정렬 후 합침
-                sortedPost = [...adminPost, ...sortedOtherPost]
-
+                sortedPost = [...adminPost, ...sortedOtherPost];
+    
                 // 최종 업데이트
-                setPosts(sortedPost)
+                setPosts(sortedPost);
             }
         } catch (error) {
-            console.error('목록을 가져올 수 없습니다.')
-            alert('게시글 목록을 불러오는 데 실패했습니다.')
+            console.error('목록을 가져올 수 없습니다.');
+            alert('게시글 목록을 불러오는 데 실패했습니다.');
         } finally {
-            setLoading(false)
+            setLoading(false);
         }
-    }
+    };
+    
 
 
     // 한 페이지에 렌더링되는 게시글의 수 설정

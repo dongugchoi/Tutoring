@@ -10,7 +10,6 @@
   padding: 20px;
   overflow: scroll;
   position: relative;
-  overflow: hidden;
 }
 
 /* 입력폼 및 글쓰기, 검색 버튼 감싸는 컨테이너 */
@@ -279,6 +278,11 @@
   cursor: pointer;
 }
 
+.boardPageButton:hover {
+  background-color: #FFF8E6;
+  /* 연한 베이지 */
+}
+
 .boardActivePage {
   background-color: #d4a373;
   /* 메인 색상 */
@@ -321,11 +325,11 @@
 /* 사이드바 컨테이너 */
 .boardSidebarContainer {
   position: fixed;
-  top: 80px;
+  top: 200px;
   /* 헤더 높이만큼 아래로 내림 */
   left: 0;
   width: 150px;
-  height: calc(100% - 80px);
+  height: calc(15% - 80px);
   /* 헤더 높이를 뺀 나머지 높이 */
   background-color: #ffffff;
   /* 연한 베이지 배경 */
@@ -363,14 +367,15 @@
   list-style: none;
   padding: 0;
   margin: 0;
-  margin-top: 40px;
+  margin-top: 50px;
   /* 닫기 버튼 아래 여백 */
   font-family: 'SSFlowerRoad', sans-serif;
 }
 
 .boardSidebarContainer li {
-  margin-bottom: 15px;
+  margin-bottom: 30px;
   /* 항목 간 간격 */
+  padding: 15px 0px 0px;
 }
 
 .boardSidebarContainer li a {
@@ -380,6 +385,8 @@
   /* 텍스트 색상 */
   font-weight: bold;
   transition: color 0.3s ease, transform 0.2s ease;
+  display: block; /* a 요소를 블록 요소로 변경 */
+  padding: 25px 0x; /* 좌우, 상하 여백을 추가하여 클릭 범위 확대 */
 }
 
 .boardSidebarContainer li a:hover {
@@ -408,21 +415,9 @@
   font-family: 'SSFlowerRoad', sans-serif;
 }
 
-.boardSidebarContainer.hide {
-  transform: translateX(-100%);
-  opacity: 0;
-  transition: transform 0.3s ease, opacity 0.3s ease;
-}
-
-.boardSidebarContainer.show {
-  transform: translateX(0);
-  opacity: 1;
-  transition: transform 0.3s ease, opacity 0.3s ease;
-}
 
 
-
-
+/* 모바일 ---------------------------------------------------------------------- */
 @media (max-width: 768px) {
 
   /* 전체 컨테이너 */

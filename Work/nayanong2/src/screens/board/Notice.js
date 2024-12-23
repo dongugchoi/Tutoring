@@ -61,7 +61,6 @@ const Board = () => {
                 // : posts 배열 안에 게시글 중 작성자의 userNick이 "rhksflwk"인 게시글 필터링 
                 //filterPost : 필터링된 게시글을 filterPost변수에 저장
                 const filterPost = response.data.filter(post => post.userNick === "관리자")
-                const adminPosts = filterPost.slice(0, 3); // 공지사항 최대 3개로 제한
                 setPosts(filterPost.reverse());
 
                 let sortedPost = filterPost
@@ -83,7 +82,7 @@ const Board = () => {
                     default:
                         break;
                 }
-                setPosts([...adminPosts, ...sortedPost]);
+                setPosts(sortedPost);
             }
         } catch (error) {
             console.error('목록을 가져올 수 없습니다.');

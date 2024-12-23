@@ -9,7 +9,7 @@ import axios from "axios";
 import farmData from '../../assets/FarmData.json';
 import { Line } from "react-chartjs-2";
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
-import { width } from "@fortawesome/free-solid-svg-icons/fa0";
+import { Circles } from "react-loader-spinner";
 import { API_BASE_URL } from "../../service/api-config";
 
 // 날짜에서 하루 전 날짜 구하기
@@ -267,7 +267,7 @@ const FarmItem = () => {
 
     return (
         <div className="farmItemContainer">
-            <h2>현대인에게 필요한 채소와 과일 Top 5</h2>
+            <h2>현대인에게 필요한 농산물 <span class="highlight">Top 5</span></h2>
             <div className="farmItemImageContainer">
                 <div className="farmImageContainer">
                     <img
@@ -278,27 +278,42 @@ const FarmItem = () => {
                     <h2>{items[currentItemIndex]}</h2>
                     <p>{itemImages[items[currentItemIndex]].unit}</p> {/* 단위 표시 */}
                 </div>
-                <div>
-                    {priceData.length > 1 && (
-                        <div className="farmDateContainer">
-                            <div className="itemDate0">
-                                <p>기준 날짜 </p>
-                                <h4>{priceData.slice(-2)[0].date}</h4>
-                                <p>평균 소매가</p>
-                                {/* Intl.NumberFormat() 숫자를 지역화된 형식으로 포멧 (천단위 구분 쉼표 사용) */}
-                                <h4>{new Intl.NumberFormat().format(priceData.slice(-2)[0].price)}원</h4>
-                            </div>
-                            <div className="itemDate1">
-                                <p>기준 날짜 </p>
-                                <h4>{priceData.slice(-2)[1].date}</h4>
-                                <p>평균 소매가</p>
-                                <h4>{new Intl.NumberFormat().format(priceData.slice(-2)[1].price)}원</h4>
-                            </div>
+                <div className="loadingContainer">
+                    {loading ? (
+                        <div className="ItemLoading">
+                            <Circles
+                                height="100"
+                                width="100"
+                                color="#3498db"
+                                ariaLabel="loading-indicator"
+                            />
+                            <p>데이터 로딩 중...</p>
                         </div>
+                    ) : (
+                        priceData.length > 1 ? (
+                            <>
+                                <div className="farmDateContainer">
+                                    <div className="itemDate0">
+                                        <p>기준 날짜 </p>
+                                        <h4>{priceData.slice(-2)[0].date}</h4>
+                                        <p>평균 소매가</p>
+                                        <h4>{new Intl.NumberFormat().format(priceData.slice(-2)[0].price)}원</h4>
+                                    </div>
+                                    <div className="itemDate1">
+                                        <p>기준 날짜 </p>
+                                        <h4>{priceData.slice(-2)[1].date}</h4>
+                                        <p>평균 소매가</p>
+                                        <h4>{new Intl.NumberFormat().format(priceData.slice(-2)[1].price)}원</h4>
+                                    </div>
+                                </div>
+                                <div className="itemChartContainer">
+                                    {priceData.length > 0 && <Line key={chartKey} data={itemChart} options={itemChartOption} />}
+                                </div>
+                            </>
+                        ) : (
+                            <p>가격 데이터가 충분하지 않습니다.</p>
+                        )
                     )}
-                </div>
-                <div className="itemChartContainer">
-                    {priceData.length > 0 && <Line key={chartKey} data={itemChart} options={itemChartOption} />}
                 </div>
             </div>
             <div className="buttonContainer">
