@@ -28,7 +28,7 @@ const FarmInfo = () => {
   const [selectedKind, setSelectedKind] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [priceType, setPriceType] = useState("retail");
+  const [priceType, setPriceType] = useState("retail"); // 초기값 'retail'로 설정
   const setAveragePrice = useSetRecoilState(averagePriceAtom);
 
   const categories = [
@@ -83,11 +83,14 @@ const FarmInfo = () => {
     })) || []
     : [];
 
-  const handleSearch = async () => {
+  const handleSearch = async (type) => {
     if (!selectedProduct || !selectedKind) {
       alert("품목이나 품종이 선택되지 않았습니다.");
       return; // 빈 값일 경우 서버 요청을 하지 않음
     }
+
+    // 검색 유형에 따라 priceType 설정
+    setPriceType(type);
 
     setLoading(true);
     setError(null);
@@ -106,7 +109,7 @@ const FarmInfo = () => {
     const selectedKindCode = selectedKind || "";
 
     const apiUrl =
-      priceType === "retail"
+      type === "retail"
         ? `${API_BASE_URL}/retail/price/all`
         : `${API_BASE_URL}/wholeSale/price/all`;
 
@@ -154,13 +157,7 @@ const FarmInfo = () => {
 
   return (
     <div className="farmInfo-container">
-      <h2>소매 · 도매 날짜별 평균가격</h2>
-      {loading && (
-        <div className="farmInfo-loading">
-          <Circles height="80" width="80" color="#4fa94d" ariaLabel="loading-indicator" />
-          <p>데이터를 불러오는 중입니다...</p>
-        </div>
-      )}
+      <h2>도매 · 소매 날짜별 평균가격</h2>
 
       {!loading && searchResults.length === 0 && (
         <p className="FarmInfo-warning-message">※주말과 공휴일은 조회가 불가합니다.</p>
@@ -235,35 +232,40 @@ const FarmInfo = () => {
               </option>
             ))}
           </select>
-          {!loading && error && <p className="FarmInfo-warning-message">{error}</p>}
         </div>
       </div>
 
+      {loading && (
+        <div className="farmInfo-loading">
+          <Circles
+            height="100"
+            width="100"
+            color="#3498db"
+            ariaLabel="loading-indicator"
+          />
+          <p>데이터 로딩 중...</p>
+        </div>
+      )}
+
       <div className="farmInfo-button-container">
         <button
-          onClick={() => {
-            setPriceType("retail");
-            handleSearch("retail"); // 소매가로 검색 시 즉시 실행
-          }}
-        >
-          소매가로 검색
-        </button>
-        <button
-          onClick={() => {
-            setPriceType("wholeSale");
-            handleSearch("wholeSale"); // 도매가로 검색 시 즉시 실행
-          }}
+          onClick={() => handleSearch("wholeSale")} // 도매가로 검색
         >
           도매가로 검색
         </button>
+        <button
+          onClick={() => handleSearch("retail")} // 소매가로 검색
+        >
+          소매가로 검색
+        </button>
       </div>
 
-      {!loading && searchResults.length > 0 && (
+      {!loading && (
         <div className="farmInfo-result-wrapper">
           <div className="farmInfo-result-container">
             {error ? (
               <p>{error}</p>
-            ) : (
+            ) : searchResults.length > 0 && (
               <>
                 <h3>{title}</h3>
                 <ul>
@@ -278,7 +280,6 @@ const FarmInfo = () => {
           </div>
         </div>
       )}
-      {/* Graph 컴포넌트 */}
       {searchResults.length > 0 && <Graph />}
     </div>
   );

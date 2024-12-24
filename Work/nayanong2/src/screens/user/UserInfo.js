@@ -142,7 +142,6 @@ const UserInfo = () => {
           },
         }
       );
-      console.log("전송 데이터:", updatedUserInfo); // 전송 데이터 로그 확인
 
       if (response.status === 200) {
         const updatedUser = response.data;
@@ -225,16 +224,10 @@ const UserInfo = () => {
               headers: {
                 Authorization: `Bearer ${token}`,
               },
-            });
-            if (deleteBoardResponse.status === 200) {
-              console.log(`게시글 번호 ${bodNum} 삭제 완료`);
-            }
-          } catch (error) {
-            console.error(`게시글 번호 ${bodNum} 삭제 실패`, error);
+            }) } catch (error) {
+              console.error(`게시글 번호 ${bodNum} 삭제 실패`, error);
+            };
           }
-        } else {
-          console.log(`게시글 번호 ${bodNum}는 삭제 대상이 아님 (작성자: ${boardUserNick}, 현재 사용자: ${currentUserNick})`);
-        }
       }
       // 회원 탈퇴 요청 (회원 정보를 먼저 삭제)
       const deleteUserResponse = await axios.delete(`${API_BASE_URL}/users/${clientNum}`, {
@@ -244,7 +237,6 @@ const UserInfo = () => {
         },
       });
       if (deleteUserResponse.status === 200) {
-        console.log("회원 탈퇴가 완료되었습니다.");
         // 탈퇴 후, 토큰 및 사용자 정보 삭제
         localStorage.removeItem("ACCESS_TOKEN");
         localStorage.removeItem("userNick");

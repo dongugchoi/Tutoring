@@ -172,7 +172,7 @@ const FarmItem = () => {
         labels: priceData.map((item) => item.date),
         datasets: [
             {
-                label: "소매가 그래프",
+                label: "소매가",
                 data: priceData.map((item) => item.price),
                 fill: false,
                 borderColor: "rgba(75, 192, 192, 1)",
@@ -267,7 +267,7 @@ const FarmItem = () => {
 
     return (
         <div className="farmItemContainer">
-            <h2>현대인에게 필요한 농산물 <span class="highlight">Top 5</span></h2>
+            <h2>현대인에게 필요한 농산물 <span className="highlight">Top 5</span></h2>
             <div className="farmItemImageContainer">
                 <div className="farmImageContainer">
                     <img
