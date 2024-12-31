@@ -3,8 +3,10 @@ import { FaBars } from "react-icons/fa";
 import Sidebar from './SideBar';
 
 const Navbar = () => {
+    // 네비바 오픈여부 상태
   const [isOpen, setIsOpen] = useState(false);
 
+ // 네비바 오픈여부 상태 업데이트 함수
   const toggleSidebar = () => {
     setIsOpen(!isOpen);
   };
