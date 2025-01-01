@@ -26,6 +26,7 @@ function App() {
           ×
         </button>
         <ul>
+          {/* 아이디 선택자로 네비게이트 이동 */}
           <li><a href="#home">Home</a></li>
           <li><a href="#about">About</a></li>
           <li><a href="#services">Services</a></li>
