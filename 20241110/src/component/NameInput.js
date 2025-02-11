@@ -14,7 +14,7 @@ function NameInput({ mbti,setMBTI, setSub }) {
   return (
     <form onSubmit={handleSave}>
         <input type="text" onChange={handleChange} />
-        <button >버튼입력</button>
+        <button style={{backgroundColor:"lightblue"}}>버튼입력</button>
     </form>
   );
 }
