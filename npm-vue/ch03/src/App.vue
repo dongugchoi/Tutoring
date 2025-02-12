@@ -6,6 +6,10 @@
         age: 19,
         message:'<h1>Hello Vue.js!</h1>',
         ClassName : `red-color`,
+        visiable: true,
+        unvisible: false,
+        condition:'A',
+        condition1:true,
       }
     },
   }
@@ -26,6 +30,18 @@
   <p v-bind:class="ClassName">Hello, Vue.Js</p>
   <!-- :속성 : 축약형 -->
   <p :class="ClassName">Hello</p>
+  <!-- v-if : 조건부 렌더링 : 디렉티브에 할당된 값의 참 / 거짓에 따라 HTML 요소를 렌더링하거나 렌더링하지않는것 -->
+  <p v-if="visiable">이 요소는 렌더링 됩니다.</p>
+  <p v-if="unvisible">이 요소는 렌더링 됩니다.></p>
+  
+  <p v-if="condition === 'A' ">이 데이터는 A 입니다.</p>
+  <p v-else-if="condition === 'B' ">이 데이터는 B 입니다.</p>
+  <p v-else-if="condition === 'C' ">이 데이터는 C 입니다.</p>
+  <p v-else-if="condition === 'D' ">이 데이터는 D 입니다.</p>
+  <p v-else>어떠한 조건에도 해당하지 않습니다.</p>
+  
+  <p v-show="condition1">참</p>
+  <p v-show="!condition1">참</p>
 </template>
 
 <style scoped>

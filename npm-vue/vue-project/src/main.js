@@ -1,7 +1,4 @@
 //뷰 인스턴스를 생성하는 코드는 main.js 에작성한다 
-
-
-
 import { createApp, h } from 'vue'
 createApp({
     data(){
