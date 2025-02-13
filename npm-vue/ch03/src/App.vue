@@ -1,21 +1,5 @@
-<script>
-  export default {
-    data() {
-      return {
-        name: 'chulsu',
-        age: 19,
-        message:'<h1>Hello Vue.js!</h1>',
-        ClassName : `red-color`,
-        visiable: true,
-        unvisible: false,
-        condition:'A',
-        condition1:true,
-      }
-    },
-  }
-</script>
-
 <template>
+  <div>
   <p>{{ name }}</p>
   <p>{{ age }}</p>
   <p>{{ 10*20*30 }}</p>
@@ -42,7 +26,45 @@
   
   <p v-show="condition1">참</p>
   <p v-show="!condition1">참</p>
+
+  <ul>
+    <li v-for="(fruit,index) in fruits" :key="index">
+      인덱스: {{ index }}, 값 : {{ fruit }}
+    </li>
+    <li v-for="(value,key,index) in user" :key="index">
+      {{ index }}: {{ key }}, {{ value }}
+    </li>
+  </ul>
+</div>
 </template>
+
+<script>
+  export default {
+    data() {
+      return {
+        name: 'chulsu',
+        age: 19,
+        message:'<h1>Hello Vue.js!</h1>',
+        ClassName : `red-color`,
+        visiable: true,
+        unvisible: false,
+        condition:'A',
+        condition1:true,
+        fruits:['apple', 'banana','orange'],
+        user:{
+          name: 'user1',
+          age: 20,
+          email: 'user1@example.com',
+          address: 'seoul',
+          phone: '010-1234-5678',
+          hobby: ['reading','painting']
+        }
+      }
+    },
+  }
+</script>
+
+
 
 <style scoped>
   .red-color{
