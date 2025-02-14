@@ -35,6 +35,9 @@
       {{ index }}: {{ key }}, {{ value }}
     </li>
   </ul>
+  <button v-on:click="clickHandler">클릭됨</button>
+  <button v-on:click="eventHandler">클릭됨</button>
+  
 </div>
 </template>
 
@@ -61,6 +64,16 @@
         }
       }
     },
+
+    methods:{
+      clickHandler(){
+        alert('클릭됬음')
+      },
+      eventHandler(event){
+        console.log(event);
+        
+      }
+    }
   }
 </script>
 
