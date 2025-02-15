@@ -37,6 +37,13 @@
   </ul>
   <button v-on:click="clickHandler">클릭됨</button>
   <button v-on:click="eventHandler">클릭됨</button>
+  <!-- 일반 매개변수만 사용할수는없다. event객체와 값을 함께 사용하려면 $event를 같이넘겨줘야한다.--> 
+  <button @click="eventHandler($event, 'Hello')">클릭됨</button>
+
+  <!-- keyup이벤트는 이벤트 객체를 사용해 Enter키 입력을 확인한다. -->
+  <input type="text" @keyup="($event) => onKeyupHandler($event)"/>
+  <!-- 수식어를 사용하면 코드가 훨씬 간단해진다. -->
+  <input type="text" @keyup.enter="modifierHandler" />
   
 </div>
 </template>
@@ -69,9 +76,23 @@
       clickHandler(){
         alert('클릭됬음')
       },
-      eventHandler(event){
-        console.log(event);
-        
+
+   
+      eventHandler(event, message){
+        console.log(event)
+        console.log(message)
+      },
+
+
+      // 키보드 이벤트 객체에서 keyCode 속성 13은 엔터키
+      onKeyupHandler(e){
+        if(e.keyCode === 13){
+          console.log('Enter !')
+        }
+      },
+
+      modifierHandler(){
+        console.log('ModifierEnter !')
       }
     }
   }
