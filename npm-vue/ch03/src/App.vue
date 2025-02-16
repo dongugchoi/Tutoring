@@ -44,7 +44,41 @@
   <input type="text" @keyup="($event) => onKeyupHandler($event)"/>
   <!-- 수식어를 사용하면 코드가 훨씬 간단해진다. -->
   <input type="text" @keyup.enter="modifierHandler" />
-  
+  <br/>
+  <button @click="plusButton">+1</button>
+  <!-- v-once : 정적디렉티브, 한번만 렌더링하고 이후에는 렌더링을 하지않는다. 값이 변경되어도 화면을 업데이트하지않는다. -->
+  <div v-once>{{ number }}</div>
+  <br/>
+
+  <!-- v-memo는 vue3.2 이상 지원한다. -->
+  <div v-memo="[name,gender]">
+    <p>{{ name }}</p>
+    <p>{{ gender }}</p>
+    <p>{{ age }}</p>
+  </div>
+<button @click="name='영희'">이름 변경</button>
+<br/>
+<button @click="gender='여자'">성별 변경</button>
+<br/>
+<button @click="age=30">나이 변경</button>
+<br/>
+
+<!-- v-model 양방향 바인딩 -->
+<form>
+  <label for="uid">아이디<input type="text" id="uid" v-model="uId"/></label> 
+  <label for="uPwd">비밀번호<input type="password" id="uPwd" v-model="uPwd"/></label> 
+  <button type="button" @click="login">로그인</button>
+</form>
+
+<form id="loginform">
+  <textarea v-model="messages"></textarea>
+  <button type="button" @click="printData">데이터 출력</button>
+</form>
+
+
+
+
+
 </div>
 </template>
 
@@ -53,8 +87,10 @@
     data() {
       return {
         name: 'chulsu',
+        gender:'남자',
         age: 19,
         message:'<h1>Hello Vue.js!</h1>',
+        messages:'',
         ClassName : `red-color`,
         visiable: true,
         unvisible: false,
@@ -68,11 +104,18 @@
           address: 'seoul',
           phone: '010-1234-5678',
           hobby: ['reading','painting']
-        }
+        },
+        number:0,
+        uId:'',
+        uPwd:'',
       }
     },
 
     methods:{
+      printData(){
+        console.log(this.messages)
+      },
+
       clickHandler(){
         alert('클릭됬음')
       },
@@ -93,6 +136,15 @@
 
       modifierHandler(){
         console.log('ModifierEnter !')
+      },
+
+      plusButton(){
+        this.number++
+      },
+
+      login(){
+        console.log('아이디 :',this.uId)
+        console.log('비밀번호',this.uPwd)
       }
     }
   }
