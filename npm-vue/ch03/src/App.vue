@@ -75,6 +75,32 @@
   <button type="button" @click="printData">데이터 출력</button>
 </form>
 
+<form id="loginform">
+  <label v-for="(fruit, index) in fruits" :key="index">
+    <input type="checkbox" v-model="selectedFruits" :value="fruit"> {{ fruit }}
+  </label>
+</form>
+<p>선택된 과일: {{ selectedFruits }}</p>
+
+<form id="loginform">
+  <label for="male">
+    <input type="radio" id="male" name="gender" v-model="gender" value="male">male</input>
+  </label>
+  <label for="female">
+    <input type="radio" id="female" name="gender" v-model="gender" value="female">female</input>
+  </label>
+  <button type="button" @click="printGender">확인</button>
+</form>
+
+<form id="loginform">
+  <select v-model="selectItem">
+    <option value="coffee">coffee</option>
+    <option value="tea">tea</option>
+    <option value="cafeLatte">cafeLatte</option>
+  </select>
+  <button type="button" @click="printSelectedItem">확인</button>
+</form>
+
 
 
 
@@ -87,7 +113,7 @@
     data() {
       return {
         name: 'chulsu',
-        gender:'남자',
+        gender:'male',
         age: 19,
         message:'<h1>Hello Vue.js!</h1>',
         messages:'',
@@ -108,16 +134,27 @@
         number:0,
         uId:'',
         uPwd:'',
+        selectedFruits:[],
+        selectItem : 'cafeLatte',
       }
     },
 
     methods:{
+
+      printGender(){
+        console.log(this.gender)
+      }, 
+
       printData(){
         console.log(this.messages)
       },
 
       clickHandler(){
         alert('클릭됬음')
+      },
+
+      printSelectedItem(){
+        console.log(this.selectItem)
       },
 
    
@@ -145,6 +182,10 @@
       login(){
         console.log('아이디 :',this.uId)
         console.log('비밀번호',this.uPwd)
+      },
+
+      fruit(){
+        this.fruits = ture
       }
     }
   }
