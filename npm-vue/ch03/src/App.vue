@@ -101,8 +101,32 @@
   <button type="button" @click="printSelectedItem">확인</button>
 </form>
 
+<!-- 한글은 한글자씩 밀리기때문에 이벤트속성으로 -->
+<input type="text" @input="onChangeHandler($event)" />
+{{ messages }}
+<br/>
+<!-- 한국어, 일본어, 중국어를 제외한 언어는 v-model을 사용 -->
+<input type="text" v-model="messages" />
+{{ messages }}
+<br/>
+<select v-model="selectd" @change="onChangeHandle">
+  <option value="apple">apple</option>
+  <option value="banana">banana</option>
+  <option value="orange">orange</option>
+</select>
+가격 : {{ price }} 원
 
+<form @submit="onsubmitHandler">
+  <button type="submit">전송</button>
+</form>
 
+<!-- keyup : 키보드의 키를 눌렀다가 뗏을 때 발생하는 이벤트 
+     keypress : 키보드의 키를 누르고 있을 때 발생
+     keydown : keyup과 비슷하지만 입력한 키의 종류(esc키를 눌렀는지 shift를 눌렀는지 등)에 초점을 맞춘다.
+-->
+<input type="text" @keyup="onKeyupHandler"/>
+<input type="text" @keypress="onkeypressHandler"/>
+<input type="text" @keydown="onkeydownHandler"/>
 
 
 </div>
@@ -136,6 +160,8 @@
         uPwd:'',
         selectedFruits:[],
         selectItem : 'cafeLatte',
+        selectd:'banana',
+        price:500,
       }
     },
 
@@ -186,7 +212,44 @@
 
       fruit(){
         this.fruits = ture
+      },
+
+      onChangeHandler($event){
+        this.messages = $event.target.value;
+      },
+
+      onChangeHandle($event){
+        if(this.selectd === 'banana'){
+          this.price = 500;
+        }
+        if(this.selectd === 'apple'){
+          this.price = 700;
+        }
+        if(this.selectd === 'orange'){
+          this.price = 1000;
+        }
+      },
+
+      onsubmitHandler(e){
+        // 기본전송이벤트 방지
+        e.preventDefault();
+        console.log('onSubmit Handler!');
+      },
+
+      onKeyupHandler(){
+        console.log(`keyup event!`);
+        
+      },
+
+      onkeypressHandler(){
+        console.log(`keypress event!`);
+      },
+
+      onkeydownHandler(){
+        console.log(`keydown event!`);
       }
+
+
     }
   }
 </script>
