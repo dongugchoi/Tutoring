@@ -1,8 +1,0 @@
-html {
-  scroll-behavior: smooth;
-}
-
-
-main {
-  padding-top: 50px; /* 네비게이션과 겹치지 않도록 상단 여백 추가 */
-}
