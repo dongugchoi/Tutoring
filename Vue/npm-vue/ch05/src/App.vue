@@ -13,6 +13,8 @@ export default{
   data(){
     return{
       visible:true,
+      username:'김철수',
+      age:30,
     }
   },
 
@@ -59,6 +61,11 @@ export default{
     console.log("Unmounted");
   },
 
+  methods:{
+    printHello(name, age){
+      alert(`안녕하세요! 저는 ${name}이고, 나이는 ${age}살입니다.`)
+    },
+  }
 
 }
 </script>
@@ -68,7 +75,11 @@ export default{
   <!-- 문자열 전달이아닌 숫자 자료형으로 전달하고싶으면 v-bind 디렉티브로 바인딩한다. 
       문자열 자료형값을 지정해주고싶으면 ``으로 지정해준다. 
   -->
-  <UserProfile :name="`김철수`" :age="30"/>
+  <!-- <UserProfile :name="username"/> -->
+  <!-- name속성은 필수값, 글자수 3자이상 -->
+   <!-- age속성은 옵션 값, 기본값 10 -->
+    <!-- <UserProfile @print-hello="(name, age) => printHello(name,age)" /> -->
+     <UserProfile @print-hello="({name, age}) => printHello(name, age)" />
 </template>
 
 <style scoped>
