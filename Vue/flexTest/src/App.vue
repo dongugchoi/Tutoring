@@ -1,18 +1,20 @@
 <template>
-    <!-- <flexTest /> -->
-     <!--<flexScroll /> -->
-     <!-- <flex /> -->
-     <tableTest />
+    <flexTest />
+     <flexScroll />
+     <flex />
+     <TableBorder />
+
 </template>
 
 <script>
 import flexTest from './components/flexTest.vue';
 import flexScroll from './components/flexScroll.vue';
 import flex from './components/flex.vue';
-import tableTest from './components/tableTest.vue';
+import TableBorder from './components/tableBorder.vue';
+
 
 export default {
-  components: { flexTest, flexScroll, flex, tableTest },
+  components: { flexTest, flexScroll, flex, TableBorder },
 
 };
 </script>
