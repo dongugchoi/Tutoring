@@ -2,16 +2,21 @@
   <div>
     <categoryFilter />
     <searchFilter />
+    <ListRendererComparison />
   </div>
 </template>
 
 <script>
 import categoryFilter from './components/categoryFilter.vue';
 import searchFilter from './components/searchFilter.vue';
+import ListRendererComparison from './components/ListRendererComparison.vue';
+
 export default {
+
   components:{
     categoryFilter,
-    searchFilter
+    searchFilter,
+    ListRendererComparison
   },
 };
 </script>
