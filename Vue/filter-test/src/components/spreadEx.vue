@@ -17,6 +17,7 @@
       return {
         arr1,
         arr2,
+        // 스프레드연산자로 arr1과 arr2를 arr3에 병합
         arr3: [...arr1, ...arr2], 
       };
     },
