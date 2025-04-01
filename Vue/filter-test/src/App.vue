@@ -4,6 +4,7 @@
     <searchFilter />
     <ListRendererComparison />
     <spreadEx />
+    <promiseEx />
   </div>
 </template>
 
@@ -12,6 +13,7 @@ import categoryFilter from './components/categoryFilter.vue';
 import searchFilter from './components/searchFilter.vue';
 import ListRendererComparison from './components/ListRendererComparison.vue';
 import spreadEx from './components/spreadEx.vue';
+import promiseEx from './components/promiseEx.vue';
 
 export default {
 
@@ -19,7 +21,8 @@ export default {
     categoryFilter,
     searchFilter,
     ListRendererComparison,
-    spreadEx
+    spreadEx,
+    promiseEx
   },
 };
 </script>
