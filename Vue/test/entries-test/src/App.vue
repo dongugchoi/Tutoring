@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <h1>Entries List</h1>
+    <h1>Entries</h1>
     <ul>
       <li v-for="(entry, index) in entries" :key="index">{{ entry }}</li>
     </ul>
