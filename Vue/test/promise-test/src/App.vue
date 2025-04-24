@@ -38,9 +38,6 @@ export default {
         .catch((error) => {
           console.error("에러 발생:", error);
         })
-        .finally(() => {
-          this.loading = false;
-        });
     }
   },
   mounted() {
