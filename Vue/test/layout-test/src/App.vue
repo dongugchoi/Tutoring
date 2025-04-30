@@ -2,12 +2,10 @@
   <div id="app">
     <h1>다이얼로그 레이아웃 예제</h1>
 
-    <!-- 버튼들 -->
     <button @click="openDialog('dialog1')"> 다이얼로그 1 열기</button>
     <button @click="openDialog('dialog2')"> 다이얼로그 2 열기</button>
     <button @click="openDialog('dialog3')"> 다이얼로그 3 열기</button>
 
-    <!-- 다이얼로그 1 -->
     <div v-if="currentDialog === 'dialog1'" class="dialog">
       <div class="dialog-content">
         <h2>다이얼로그 1</h2>
@@ -16,7 +14,6 @@
       </div>
     </div>
 
-    <!-- 다이얼로그 2 -->
     <div v-if="currentDialog === 'dialog2'" class="dialog">
       <div class="dialog-content">
         <h2>다이얼로그 2</h2>
@@ -25,7 +22,6 @@
       </div>
     </div>
 
-    <!-- 다이얼로그 3 -->
     <div v-if="currentDialog === 'dialog3'" class="dialog">
       <div class="dialog-content">
         <h2>다이얼로그 3</h2>
