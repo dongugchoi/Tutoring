@@ -1,7 +1,7 @@
 <template>
   <div>
     <button 
-      v-for="(button, idx) in buttons" 
+      v-for="(button) in buttons" 
       :key="button.no" 
       :class="{ active: activeNo === button.no }" 
       @click="activeNo = activeNo === button.no ? null : button.no"
