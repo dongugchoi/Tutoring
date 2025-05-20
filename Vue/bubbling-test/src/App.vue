@@ -20,7 +20,7 @@ export default {
       alert('자식 div 클릭됨');
 
       // 주석을 풀면 버블링 방지됨
-      // event.stopPropagation();
+      event.stopPropagation();
     }
   }
 }
